@@ -144,7 +144,7 @@ var widget2 ;
       leading:IconButton(
                     icon:Image.asset('assets/images/Layer 1.png'),
                     onPressed: () => {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Accept()))
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Accept(title: 0,)))
                     },
                   ) ,
       // elevation: 0,

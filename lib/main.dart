@@ -23,7 +23,7 @@ import 'package:flutter/material.dart';
 //     await Firebase.initializeApp();
 //     print('a big message just showing up:${message.messageId}');
 //   }
-
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future <void> main() async{
   // WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp();
@@ -78,9 +78,9 @@ class _MyAppState extends State<MyApp> {
     //   AndroidNotification ?android=message.notification?.android;
     //   if(notification!=null && android!=null){
     //     showDialog(context: context, builder: (_){
-    //       return AlertDialog(title: Text("notification.title"),
+    //       return AlertDialog(title: Text("$notification"),
     //       content:SingleChildScrollView(
-    //         child:  Container(child: Text("notification.body")),));
+    //         child:  Container(child: Text("$notification")),));
     //     });
     //   }
     // });
@@ -92,6 +92,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     
     return MaterialApp(
+      navigatorKey: navigatorKey,
       themeMode: ThemeMode.light,
       theme: ThemeData(
         primarySwatch: Colors.deepOrange
@@ -152,3 +153,9 @@ class _MyAppState extends State<MyApp> {
 //     );
 //   }
 // }
+
+
+
+
+
+

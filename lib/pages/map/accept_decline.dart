@@ -11,30 +11,38 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class Accept extends StatelessWidget {
+// class Accept extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Google Map',
+//       // theme: ThemeData(
+//       //   brightness: Brightness.light,
+//       //   // primarySwatch: Colors.blue,
+//       // ),
+//       darkTheme: ThemeData(
+//         brightness: Brightness.dark,
+//         /* dark theme settings */
+//       ),
+//       home: AcceptView(),
+//     );
+//   }
+// }
+
+class Accept extends StatefulWidget {
+  final int title;
+
+  Accept(
+      {
+        Key? key,
+      required this.title,
+      })
+      : super(key: key);
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Google Map',
-      // theme: ThemeData(
-      //   brightness: Brightness.light,
-      //   // primarySwatch: Colors.blue,
-      // ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        /* dark theme settings */
-      ),
-      home: AcceptView(),
-    );
-  }
+  _AcceptState createState() => _AcceptState();
 }
 
-class AcceptView extends StatefulWidget {
-  @override
-  _AcceptViewState createState() => _AcceptViewState();
-}
-
-class _AcceptViewState extends State<AcceptView> {
+class _AcceptState extends State<Accept> {
   Set<Polyline> lines = {};
   // Completer<GoogleMapController> _controller = Completer();
   TimeOfDay endTime = TimeOfDay.now();
@@ -232,6 +240,7 @@ class _AcceptViewState extends State<AcceptView> {
                 },
               ),
             ),
+            Center(child: Text(widget.title.toString(), style:TextStyle(color: Colors.black, fontWeight:FontWeight.bold)))
           ],
         ),
       ),

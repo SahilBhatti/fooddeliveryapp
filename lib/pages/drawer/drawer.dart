@@ -2,12 +2,12 @@ import 'package:demoapp/pages/Transport/transport.dart';
 import 'package:demoapp/pages/Wallet/wallet.dart';
 import 'package:demoapp/pages/cart/cart.dart';
 import 'package:demoapp/pages/drawer/deliver%20history/deliverhistory/deliverhistory.dart';
+import 'package:demoapp/pages/drawer/logoutalert/logout.dart';
 import 'package:demoapp/pages/drawer/notifications/notifications.dart';
 import 'package:demoapp/pages/drawer/profile/profile.dart';
 import 'package:demoapp/pages/drawer/settings/settings.dart';
 import 'package:demoapp/pages/drawer/support/support.dart';
 import 'package:demoapp/pages/map/map1.dart';
-import 'package:demoapp/pages/user/Login.dart';
 import 'package:demoapp/utlis/platte.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -238,8 +238,12 @@ class _HomeState extends State<Home> {
                           style: btnWhiteNrmlText,
                         ),
                         onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => Login()));
+                          showDialog(
+                    context: context,
+                    builder: (_) => (Logout()),
+                  );
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) => Login()));
                         },
                       ),
                     ),

@@ -105,7 +105,7 @@ class _OrderViewState extends State<OrderView> {
   void navigationPage() { //landing screen replace with splash screen.
   // Navigator.pop(context);
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (BuildContext context) => Accept()));
+            builder: (BuildContext context) => Accept(title: 0,)));
   }
   
   @override

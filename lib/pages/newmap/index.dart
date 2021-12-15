@@ -625,7 +625,7 @@ class FinalDeliveryState extends State<FinalDelivery> {
             icon: Image.asset('assets/images/Layer 1.png'),
             onPressed: () => {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Accept()))
+                  MaterialPageRoute(builder: (context) => Accept(title: 0,)))
             },
           ),
           // elevation: 0,
