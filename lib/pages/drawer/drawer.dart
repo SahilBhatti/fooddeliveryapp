@@ -1,6 +1,5 @@
 import 'package:demoapp/pages/Transport/transport.dart';
 import 'package:demoapp/pages/Wallet/wallet.dart';
-import 'package:demoapp/pages/cart/cart.dart';
 import 'package:demoapp/pages/drawer/deliver%20history/deliverhistory/deliverhistory.dart';
 import 'package:demoapp/pages/drawer/logoutalert/logout.dart';
 import 'package:demoapp/pages/drawer/notifications/notifications.dart';
@@ -326,7 +325,6 @@ class _HomeDataState extends State<HomeData> {
         // child: Text('Account')
 
         ),
-    Container(child: Cart()),
     // child: Text('Notification')
 
     Container(child: Profile()
@@ -343,10 +341,6 @@ class _HomeDataState extends State<HomeData> {
       } else if (index == 1) {
         //  Navigator.push( context, MaterialPageRoute(builder:(context) =>  Wallet()));
       } else if (index == 2) {
-        // Navigator.push( context, MaterialPageRoute(builder:(context) =>  Profile()));
-      } else if (index == 3) {
-        //  Navigator.push( context, MaterialPageRoute(builder:(context) =>  Transport()));
-      } else if (index == 4) {
         //  Navigator.push( context, MaterialPageRoute(builder:(context) =>  Profile()));
       }
     });
@@ -367,18 +361,6 @@ class _HomeDataState extends State<HomeData> {
             icon: ImageIcon(AssetImage(
                 'assets/images/254-2547231_png-file-svg-fast-delivery-icon-png-clipart.png')),
             label: 'Delivery',
-            backgroundColor: Colors.white70,
-          ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage(
-                'assets/images/803708a2135c22ec40826c306b00e933.png')),
-            label: 'Search',
-            backgroundColor: Colors.white70,
-          ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage(
-                'assets/images/714-7147174_png-file-svg-transparent-background-shopping-cart-icon.png')),
-            label: 'Cart',
             backgroundColor: Colors.white70,
           ),
           BottomNavigationBarItem(

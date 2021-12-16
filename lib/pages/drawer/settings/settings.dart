@@ -40,14 +40,18 @@ class _SettingsState extends State<Settings> {
               children: [
                 Text('I agree to share my location'),
                 Padding(
-                  padding: const EdgeInsets.only(left:60),
+                  padding: const EdgeInsets.only(left:60,bottom: 10),
                   child: FlutterSwitch(
-                    width: 60.0,
+                    activeToggleColor: Colors.white,
+                    inactiveToggleColor: Colors.white,
+                    activeTextColor: Colors.transparent,
+                    inactiveTextColor: Colors.transparent,
+                    width: 45.0,
                     height: 25.0,
                     value: status,
                     borderRadius: 30.0,
                     padding: 1.0,
-                    activeColor: Colors.red,
+                    activeColor: Colors.orange,
                     showOnOff: true,
                     onToggle: (val) {
                       setState(() {

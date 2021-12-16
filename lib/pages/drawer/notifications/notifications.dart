@@ -28,7 +28,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: "Visibility",
       home: new Scaffold(
         appBar: AppBar(
         title: Text("Notifications", style: TextStyle(color:Colors.black),),
@@ -69,38 +68,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   ],
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right:25),
-                                child: new ElevatedButton(
-                  onPressed: _visibilitymethod, child: new Text(mText),),
-                              ),
-              ),
-                a == true ? new Container(
-                width: 300.0,
-                height: 300.0,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius:BorderRadius.circular(20)),
-              ) : new Container(),
 
               
             ],
           )
       ),
     );
-  }
-
-  void _visibilitymethod() {
-    setState(() {
-      if (a) {
-        a = false;
-        mText = "Press to show";
-      } else {
-        a = true;
-        mText = "Press to hide";
-      }
-    });
   }
 }

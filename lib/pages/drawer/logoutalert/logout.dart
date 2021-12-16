@@ -1,7 +1,7 @@
-
-import 'package:demoapp/pages/user/Login.dart';
+import 'package:demoapp/pages/user/SocailLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 
 
@@ -13,6 +13,7 @@ class Logout extends StatefulWidget {
 
     class LogoutState extends State<Logout>
         with SingleTickerProviderStateMixin {
+          GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
     late  final AnimationController controller;
      late final Animation<double> scaleAnimation;
 
@@ -64,11 +65,12 @@ class Logout extends StatefulWidget {
                               padding: const EdgeInsets.only(left:10,right:10,top:5,bottom:5),
                               child: Text('Cancel'.toUpperCase(),style: TextStyle(fontWeight:FontWeight.bold,)),
                             ),),
-                            ElevatedButton(onPressed: (){
+                            ElevatedButton(onPressed: ()async{
+                              await _googleSignIn.signOut();
                               Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Login()));
+                                  builder: (context) => SocailLogin()));
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(left:30,right:30,top:5,bottom:5),
