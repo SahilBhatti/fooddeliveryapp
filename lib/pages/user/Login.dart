@@ -1,12 +1,15 @@
+import 'dart:convert';
+
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:demoapp/pages/Wallet/AddPaypalAddress/AddPaypalAddress.dart';
+import 'package:demoapp/pages/drawer/drawer.dart';
 import 'package:demoapp/utlis/platte.dart';
-import 'package:demoapp/utlis/routes.dart';
 import 'package:demoapp/pages/user/ForgotPassword.dart';
-// import 'package:demoapp/pages/user/Signup.dart';
+import 'package:demoapp/utlis/routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:http/http.dart'as http;
 class Login extends StatefulWidget {
@@ -23,55 +26,172 @@ class _LoginState extends State<Login>with SingleTickerProviderStateMixin{
 TextEditingController mobileController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   var formKey = GlobalKey<FormState>();
+  var formKey2 = GlobalKey<FormState>();
 
-  validateData() async {
+  Future validateData() async {
     final isValid = formKey.currentState!.validate();
-
+    var sessionManager = SessionManager();
+    await sessionManager.set("phoneoremail", emailController.text);
+    await sessionManager.set("password", passwordController.text);
+    dynamic id = await SessionManager().get("email");
+    dynamic id2 = await SessionManager().get("password");
+    //createPost();
+    //print(dataPost);
+    print(id2);
     if (isValid) {
+      //   dynamic id =await SessionManager().remove("email");
+
+      // dynamic id2 =await SessionManager().remove("password");
       formKey.currentState?.save();
       print("email  " + emailController.text);
       print("password  " + passwordController.text);
       setState(() {
-        Navigator.pushNamed(context, MyRoutes.homepage);
+        if (id == emailController.text && id2 == passwordController.text) {
+          // Navigator.push(context, MaterialPageRoute(builder: (context)=> Home(name: '', email: emailController.text)));
+        } else {
+          print(" valid122");
+        }
       });
     } else {
       print("not valid");
+    }
+  }
+
+  Future<void> login() async {
+    print(emailController.text);
+    print(passwordController.text);
+    if (passwordController.text != '' && emailController.text != '') {
+      var response = await http.post(
+          Uri.parse("http://fd.hagglerplanet.com:5001/login/customer"),
+          body: ({
+            'phoneoremail': emailController.text,
+            'password': passwordController.text
+          }),
+          headers: {
+            "token":
+                "Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks"
+          });
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    Home()));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Invalid credential'),
+        ));
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Blank Field not allowed')));
     }
   }
 
   validateData2() async {
     final isValid = formKey.currentState!.validate();
-
+    var sessionManager = SessionManager();
+    await sessionManager.set("username", usernameController.text);
+    await sessionManager.set("phoneoremail", emailController.text);
+    await sessionManager.set("password", passwordController.text);
+    await sessionManager.set("phone", mobileController.text);
+    dynamic id = await SessionManager().get("username");
+    dynamic id2 = await SessionManager().get("phoneoremail");
+    dynamic id3 = await SessionManager().get("password");
+    dynamic id4 = await SessionManager().get("phone");
+    print(id);
+    print(id2);
+    print(id3);
+    print(id4);
     if (isValid) {
       formKey.currentState?.save();
+      print("username  " + usernameController.text);
+      print("phone  " + mobileController.text);
       print("email  " + emailController.text);
       print("password  " + passwordController.text);
       setState(() {
-        Navigator.pushNamed(context, MyRoutes.resetPasswordOtp);
+        // Navigator.pushNamed(context, MyRoutes.otpVerify);
       });
     } else {
       print("not valid");
     }
   }
 
- 
- Future createPost(String url) async {
-  return await http.post(
-  Uri.parse("http://223.178.209.66/login/customer"),
-  body: {
-    "client_id": emailController.text,
-    "redirect_uri": passwordController.text,
-    
-  },headers: {"token": "Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks"}).then((http.Response response) {
-    final int statusCode = response.statusCode;
-
-    if (statusCode < 200 || statusCode > 400 ) {
-      throw new Exception("Error while fetching data");
+  Future<void> register() async {
+    final postData = ({
+      "postData": {
+        "first_Name": "sahil",
+        "last_Name": "Kumar",
+        "email": "sahil7489@gmail.com",
+        "password": "1234",
+        "phone": "0123456789"
+      }
+    });
+    print(postData);
+    print(passwordController.text);
+    if (passwordController.text != '' &&
+        emailController.text != '' &&
+        usernameController.text != '' &&
+        mobileController.text != '') {
+      print("66666666");
+      var response = await http.post(
+          Uri.parse(
+              "http://fd.hagglerplanet.com:5001/customer/checkcustomeralready"),
+          body: {
+            "email": emailController.text,
+            "phone": mobileController.text
+          },
+          headers: {
+            "token":
+                "Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks"
+          });
+      print(response.statusCode);
+      var tagsJson = jsonDecode(response.body);
+      print(tagsJson['message']);
+      if (response.statusCode == 200) {
+          if(tagsJson['message'] == 'phone') {
+            ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('phone no. already exit')));
+            print('phone no. already exit');
+          } else if (tagsJson['message'] == 'email') {
+             ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('email already exit')));
+            print('email already exist');
+          } else if (tagsJson['message'] == 'itsnewcustomer') {
+            var response = await http.post(
+                Uri.parse("http://fd.hagglerplanet.com:5001/customer"),
+                headers: {
+                  'token':
+                      'Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks',
+                },
+                body: {
+                  "first_Name": usernameController.text,
+                  "last_Name": usernameController.text,
+                  "phone": mobileController.text,
+                  "email": emailController.text,
+                  "password": passwordController.text,
+                });
+            if (response.statusCode == 201) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('account created successfully')));
+                  // Navigator.pushNamed(context, MyRoutes.otpVerify);
+            }
+          }
+        
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Invalid credential'),
+        ));
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Blank Field not allowed')));
     }
-    return (response.body);
-  });
-  
-}
+  }
+
+ 
+ 
 final List<Tab> tabs = <Tab>[
       Tab(text: 'Page1'),
       Tab(text: 'Page2'),
@@ -88,6 +208,9 @@ final List<Tab> tabs = <Tab>[
         tabController!.dispose();
         super.dispose();
       }
+
+
+      
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -194,7 +317,7 @@ final List<Tab> tabs = <Tab>[
                                               ),
                                               onPressed: () {
                                                 validateData();
-                                                createPost('');
+                                                login();
                                                 // Navigator.push(
                                                 //     context,
                                                 //     MaterialPageRoute(
@@ -252,10 +375,6 @@ final List<Tab> tabs = <Tab>[
                                               recognizer: new TapGestureRecognizer()
                                                 ..onTap = () {
                                                   tabController?.animateTo(1);
-                                                  // Navigator.push(
-                                                  //     context,
-                                                  //     MaterialPageRoute(
-                                                  //         builder: (context) => Signup()));
                                                 })
                                         ])),
                                   )),
@@ -282,7 +401,7 @@ final List<Tab> tabs = <Tab>[
                         const EdgeInsets.symmetric(horizontal: 40, vertical: 0),
                 child:
                 Form(
-                        key: formKey,
+                        key: formKey2,
                         child: Column(
                           children: [
                             Column(
@@ -334,6 +453,7 @@ final List<Tab> tabs = <Tab>[
                                       ),
                                       onPressed: () {
                                         validateData2();
+                                        register();
                                         // Navigator.push(
                                         //     context,
                                         //     MaterialPageRoute(
@@ -578,139 +698,3 @@ class _PasswordInputValueState extends State<PasswordInputValue> {
         ));
   }
 }
-
-
-
-
-
-
-
-
-
-
-// import 'package:flutter/material.dart';
-
-// Future<void> main() async {
-//   runApp(Login());
-// }
-
-// class Login extends StatefulWidget {
-//       Login({Key ?key}) : super(key: key);
-    
-//       @override
-//       _LoginState createState() => _LoginState();
-//     }
-    
-//     final List<Tab> tabs = <Tab>[
-//       Tab(text: 'Page1'),
-//       Tab(text: 'Page2'),
-//     ];
-    
-//     class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
-    
-//       TabController ?tabController;
-    
-//       @override
-//       void initState() {
-//         super.initState();
-//         tabController = new TabController(vsync: this, length: tabs.length);
-//       }
-    
-//       @override
-//       void dispose() {
-//         tabController!.dispose();
-//         super.dispose();
-//       }
-    
-//       @override
-//       Widget build(BuildContext context) {
-//         return DefaultTabController(
-//           length: 2,
-//           child: Scaffold(
-//             backgroundColor: Theme.of(context).primaryColor,
-//             appBar: AppBar(
-//               backgroundColor: Theme.of(context).primaryColor,
-//               centerTitle: true,
-//               shape: Border(bottom: BorderSide(color: Colors.white)),
-//               title: Text("Tab Bar",),
-//               bottom: TabBar(
-//                 controller: tabController,
-//                 tabs: tabs,
-//                 indicatorWeight: 5,
-//                 indicatorColor: Colors.white,
-//                 labelColor: Colors.white,
-//               ),
-//             ),
-//             body: TabBarView(
-//               controller: tabController,
-//               children: [
-//                 PageOneScreen(controller: tabController),
-//                 PageTwoScreen(controller: tabController),
-//               ],
-//             ),
-//           ),
-//         );
-//       }
-//     }
-
-// // class PageOne
-
-//     class PageOneScreen extends StatefulWidget {
-//     @override
-//     _PageOneScreenState createState() => _PageOneScreenState();
-
-//        PageOneScreen({controller}) {
-//           tabController = controller;
-//        }
-//     }
-
-//     TabController ?tabController;
-
-//     class _PageOneScreenState extends State<PageOneScreen> {
-//       @override
-//       Widget build(BuildContext context) {
-//         return Column(
-//           children: [
-//             ElevatedButton(
-//               onPressed: () {
-//                 tabController?.animateTo(1); // number : index page
-//               },
-//               child: Text(
-//                 "Go To Page 2",
-//               ),
-//             ),
-//           ],
-//         );
-//       }
-//     }
-
-// // class PageTwoScreen
-
-//     class PageTwoScreen extends StatefulWidget {
-//     @override
-//     _PageTwoScreenState createState() => _PageTwoScreenState();
-
-//        PageTwoScreen({controller}) {
-//           tabController2 = controller;
-//        }
-//     }
-
-//     TabController ?tabController2;
-
-//     class _PageTwoScreenState extends State<PageTwoScreen> {
-//       @override
-//       Widget build(BuildContext context) {
-//         return Column(
-//           children: [
-//             ElevatedButton(
-//               onPressed: () {
-//                 tabController2?.animateTo(1); // number : index page
-//               },
-//               child: Text(
-//                 "Go To Page 1",
-//               ),
-//             ),
-//           ],
-//         );
-//       }
-//     }
