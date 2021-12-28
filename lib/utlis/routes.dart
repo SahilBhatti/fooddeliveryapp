@@ -10,6 +10,7 @@ class MyRoutes{
   static String forgetPasswordRoute="/forgetPassword";
   static String loginRoute="/login";
   static String resetPasswordOtp="/ResetPasswordOtp";
+  static String resetpassword="/ResetPassword";
   static String saveResetPassword="/ResetPassword";
   static String otpVerify="/OtpVerification";
 }

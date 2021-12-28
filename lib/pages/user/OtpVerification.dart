@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:demoapp/utlis/platte.dart';
 import 'package:demoapp/utlis/routes.dart';
 import 'package:flutter/cupertino.dart';
 // import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-
+import 'package:http/http.dart'as http;
+import 'package:demoapp/pages/user/urlmodal.dart';
 class OtpVerification extends StatefulWidget {
   const OtpVerification({Key? key}) : super(key: key);
 
@@ -17,21 +21,77 @@ class _OtpVerificationState extends State<OtpVerification> {
   TextEditingController mobileController = TextEditingController();
   var formKey = GlobalKey<FormState>();
 
+  // validateData() async {
+  //   final isValid = formKey.currentState!.validate();
+
+
+
+  //   if (isValid) {
+  //     formKey.currentState?.save();
+  //     print("OTP  " + mobileController.text);
+  //     setState(() {
+  //       Navigator.pushNamed(context, MyRoutes.loginRoute);
+  //   });
+
+  //   } else {
+  //     print("not valid");
+  //   }
+  // }
+
   validateData() async {
+     dynamic id = await SessionManager().get("userId");
+    print(id);
+    var verificationcode = '098765';
     final isValid = formKey.currentState!.validate();
-
-
-
+    var sessionManager = SessionManager();
+     await sessionManager.set("verification_code", mobileController.text);
     if (isValid) {
       formKey.currentState?.save();
       print("OTP  " + mobileController.text);
       setState(() {
-        Navigator.pushNamed(context, MyRoutes.saveResetPassword);
-    });
-
+        if (mobileController.text != verificationcode) {
+        Timer(Duration(seconds: 5), () {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: ElevatedButton(
+                onPressed: () async {
+                  var sendVerifyOtp = await http.get(
+                      Uri.parse(
+                          Url.url + "/email/customerVerificationCode/{$id}"),
+                      headers: {
+                        "token":
+                            "Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks"
+                      });
+                  print(sendVerifyOtp);
+                  print(sendVerifyOtp.statusCode);
+                  print("sendVerifyOtp");
+                  if(sendVerifyOtp.statusCode==200){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Email Sent again')));
+                  }else{
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Email not sent')));
+                  }
+                  
+                },
+                child: Text('resend Otp')),
+          ));
+        });}
+        Navigator.pushNamed(context, MyRoutes.loginRoute);
+      });
     } else {
       print("not valid");
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getId();
+  }
+
+  getId() async {
+    dynamic id = await SessionManager().get("userId");
+    print(id);
   }
 
   @override
@@ -87,7 +147,6 @@ class _OtpVerificationState extends State<OtpVerification> {
                                   ),
                                 ),
                                 MobileInput(
-                                  icon: CupertinoIcons.phone,
                                   hint: "Enter OTP",
                                   inputType: TextInputType.number,
                                   inputAction: TextInputAction.next,
@@ -140,14 +199,12 @@ class _OtpVerificationState extends State<OtpVerification> {
 class MobileInput extends StatelessWidget {
   const MobileInput(
       {Key? key,
-        required this.icon,
         required this.hint,
         required this.inputType,
         required this.inputAction,
         required this.mobileController})
       : super(key: key);
 
-  final IconData icon;
   final String hint;
   final TextInputType inputType;
   final TextInputAction inputAction;
@@ -164,11 +221,8 @@ class MobileInput extends StatelessWidget {
           child: TextFormField(
             decoration: InputDecoration(
               border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black26,width: 0.75),borderRadius: BorderRadius.circular(30.0) ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 4),
+              contentPadding: const EdgeInsets.symmetric(vertical: 4,horizontal: 20),
               hintText: hint,
-              prefixIcon: Padding(  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Icon(  icon,  color: Colors.black26,size: 20,)
-              ),
             ),
             keyboardType: TextInputType.number,
             textInputAction: inputAction,

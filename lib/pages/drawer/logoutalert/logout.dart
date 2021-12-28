@@ -1,9 +1,10 @@
 import 'package:demoapp/pages/user/SocailLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-
+import 'package:http/http.dart'as http;
+import 'package:demoapp/pages/user/urlmodal.dart';
 
 
 class Logout extends StatefulWidget {
@@ -32,6 +33,30 @@ class Logout extends StatefulWidget {
 
         controller.forward();
       }
+
+       Future<void>logout()async{
+    dynamic id =await SessionManager().remove("email");
+
+    dynamic id2 =await SessionManager().remove("password");
+  print(id);
+  print(id2);
+  var response=await http.get(Uri.parse(Url.url+"/login/logout"),
+  headers: {
+            "token":
+                "Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks"
+          });
+          print(response.body);
+          print("logout");
+          print(response.statusCode);
+          if(response.statusCode==200){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> SocailLogin()));
+          }else{
+            ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('logout failed')));
+          }
+    // Navigator.push(context, MaterialPageRoute(builder: (context)=> Login()));
+    
+  }
 
       @override
       Widget build(BuildContext context) {
@@ -67,10 +92,11 @@ class Logout extends StatefulWidget {
                             ),),
                             ElevatedButton(onPressed: ()async{
                               await _googleSignIn.signOut();
-                              Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SocailLogin()));
+                              logout();
+                              // Navigator.push(
+                              // context,
+                              // MaterialPageRoute(
+                              //     builder: (context) => SocailLogin()));
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(left:30,right:30,top:5,bottom:5),

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:http/http.dart'as http;
+import 'package:demoapp/pages/user/urlmodal.dart';
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
   @override
@@ -28,52 +29,58 @@ TextEditingController mobileController = TextEditingController();
   var formKey = GlobalKey<FormState>();
   var formKey2 = GlobalKey<FormState>();
 
-  Future validateData() async {
+ 
+ Future validateData() async {
     final isValid = formKey.currentState!.validate();
     var sessionManager = SessionManager();
     await sessionManager.set("phoneoremail", emailController.text);
     await sessionManager.set("password", passwordController.text);
-    dynamic id = await SessionManager().get("email");
+    dynamic id = await SessionManager().get("phoneoremail");
     dynamic id2 = await SessionManager().get("password");
-    //createPost();
-    //print(dataPost);
+    print(id);
     print(id2);
     if (isValid) {
-      //   dynamic id =await SessionManager().remove("email");
-
-      // dynamic id2 =await SessionManager().remove("password");
       formKey.currentState?.save();
-      print("email  " + emailController.text);
-      print("password  " + passwordController.text);
-      setState(() {
-        if (id == emailController.text && id2 == passwordController.text) {
-          // Navigator.push(context, MaterialPageRoute(builder: (context)=> Home(name: '', email: emailController.text)));
-        } else {
-          print(" valid122");
-        }
-      });
+      final email = emailController.text;
+      final password = passwordController.text;
+      print("email  " + email);
+      print("password  " + password);
+      // setState(() {
+      //   if (id == email && id2 == password) {
+      //     // Navigator.push(context, MaterialPageRoute(builder: (context)=> Home(name: '', email: emailController.text)));
+      //   } else {
+      //     print(" valid122");
+      //   }
+      // });
     } else {
       print("not valid");
     }
   }
 
+  final postData = {
+    'phoneoremail': 'sahilsharry123@gmail.com',
+    'password': 'sahil@123'
+  };
+
   Future<void> login() async {
     print(emailController.text);
     print(passwordController.text);
     if (passwordController.text != '' && emailController.text != '') {
+      print(Url.url+"/login/customer");
       var response = await http.post(
-          Uri.parse("http://fd.hagglerplanet.com:5001/login/customer"),
-          body: ({
-            'phoneoremail': emailController.text,
-            'password': passwordController.text
-          }),
+          Uri.parse(Url.url+"/login/customer"),
+          body: {
+        'phoneoremail': emailController.text,
+        'password': passwordController.text
+      },
           headers: {
             "token":
                 "Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks"
           });
+          print(response.body);
       print(response.statusCode);
       if (response.statusCode == 200) {
-        Navigator.push(
+              Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) =>
@@ -88,6 +95,7 @@ TextEditingController mobileController = TextEditingController();
           .showSnackBar(SnackBar(content: Text('Blank Field not allowed')));
     }
   }
+
 
   validateData2() async {
     final isValid = formKey.currentState!.validate();
@@ -119,66 +127,88 @@ TextEditingController mobileController = TextEditingController();
   }
 
   Future<void> register() async {
-    final postData = ({
-      "postData": {
-        "first_Name": "sahil",
-        "last_Name": "Kumar",
-        "email": "sahil7489@gmail.com",
-        "password": "1234",
-        "phone": "0123456789"
-      }
-    });
-    print(postData);
     print(passwordController.text);
     if (passwordController.text != '' &&
         emailController.text != '' &&
         usernameController.text != '' &&
         mobileController.text != '') {
       print("66666666");
-      var response = await http.post(
-          Uri.parse(
-              "http://fd.hagglerplanet.com:5001/customer/checkcustomeralready"),
-          body: {
-            "email": emailController.text,
-            "phone": mobileController.text
-          },
-          headers: {
-            "token":
-                "Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks"
-          });
+      var response = await http
+          .post(Uri.parse(Url.url + "/customer/checkcustomeralready"), body: {
+        "email": emailController.text,
+        "phone": mobileController.text
+      }, headers: {
+        "token": "Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks"
+      });
       print(response.statusCode);
       var tagsJson = jsonDecode(response.body);
       print(tagsJson['message']);
       if (response.statusCode == 200) {
-          if(tagsJson['message'] == 'phone') {
-            ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('phone no. already exit')));
-            print('phone no. already exit');
-          } else if (tagsJson['message'] == 'email') {
-             ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('email already exit')));
-            print('email already exist');
-          } else if (tagsJson['message'] == 'itsnewcustomer') {
-            var response = await http.post(
-                Uri.parse("http://fd.hagglerplanet.com:5001/customer"),
-                headers: {
-                  'token':
-                      'Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks',
-                },
-                body: {
-                  "first_Name": usernameController.text,
-                  "last_Name": usernameController.text,
-                  "phone": mobileController.text,
-                  "email": emailController.text,
-                  "password": passwordController.text,
-                });
-            if (response.statusCode == 201) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('account created successfully')));
-                  // Navigator.pushNamed(context, MyRoutes.otpVerify);
+        if (tagsJson['message'] == 'phone') {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('phone no. already exit')));
+          print('phone no. already exit');
+        } else if (tagsJson['message'] == 'email') {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('email already exit')));
+          print('email already exist');
+        } else if (tagsJson['message'] == 'itsnewcustomer') {
+          final postData = {
+            "first_Name": usernameController.text,
+            "last_Name": usernameController.text,
+            "phone": mobileController.text,
+            "email": emailController.text,
+            "password": passwordController.text,
+          };
+
+          var newCustresponse = await http
+              .post(Uri.parse(Url.url + "/customer"), body: postData, headers: {
+            "token":
+                "Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks"
+          });
+
+          var newCustJson = jsonDecode(newCustresponse.body);
+          var encryptedid = newCustJson['customer']['encryptedid'];
+
+          print(encryptedid);
+          var sessionManager = SessionManager();
+    await sessionManager.set("userId", encryptedid);
+
+          var customerCreatedres = await http.get(
+            Uri.parse(Url.url + "/email/customerCreated/{$encryptedid}"),
+            headers: {
+              'token':
+                  'Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks',
+            },
+          );
+          print(customerCreatedres.statusCode);
+          if (customerCreatedres.statusCode == 201 ||
+              customerCreatedres.statusCode == 200) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Email Successfully Sent')));
+            var otp = await http.get(
+              Uri.parse(Url.url +
+                  "/email/customerAccountVerificationCode/{$encryptedid}"),
+              headers: {
+                'token':
+                    'Bearer hjskdhskjdhsjkdhskjdhskjdhskdhskjdhsdjksjhdsjkdsdks',
+              },
+            );
+            print("otp");
+            print(otp.body);
+            if (otp.statusCode == 200) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text('Otp sent')));
+              Navigator.pushNamed(context, MyRoutes.otpVerify);
+            } else {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text('Otp not sent')));
             }
+          } else {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text('Email not Sent')));
           }
-        
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Invalid credential'),
@@ -190,7 +220,6 @@ TextEditingController mobileController = TextEditingController();
     }
   }
 
- 
  
 final List<Tab> tabs = <Tab>[
       Tab(text: 'Page1'),
