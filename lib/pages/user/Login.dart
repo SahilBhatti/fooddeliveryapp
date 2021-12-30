@@ -127,6 +127,7 @@ TextEditingController mobileController = TextEditingController();
   }
 
   Future<void> register() async {
+    _onLoading();
     print(passwordController.text);
     if (passwordController.text != '' &&
         emailController.text != '' &&
@@ -186,6 +187,7 @@ TextEditingController mobileController = TextEditingController();
               customerCreatedres.statusCode == 200) {
             ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Email Successfully Sent')));
+                _onLoading2();
             var otp = await http.get(
               Uri.parse(Url.url +
                   "/email/customerAccountVerificationCode/{$encryptedid}"),
@@ -237,7 +239,65 @@ final List<Tab> tabs = <Tab>[
         tabController!.dispose();
         super.dispose();
       }
+void _onLoading() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Theme(
+            data: Theme.of(context).copyWith(dialogBackgroundColor: Colors.white),
+              child: Dialog(
+          child: Padding(
+            padding: const EdgeInsets.only(top:10,bottom:10,left:20),
+            child: Row(
+              children: [
+                new CircularProgressIndicator(),
+                Padding(
+                   padding: const EdgeInsets.only(left:20),
+                  child: new Text("Loading..."),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+  new Future.delayed(new Duration(seconds: 10), () {
+    Navigator.pop(context); //pop dialog
+    // _login();
+  });
+}
 
+  void _onLoading2() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Theme(
+            data: Theme.of(context).copyWith(dialogBackgroundColor: Colors.white),
+              child: Dialog(
+          child: Padding(
+            padding: const EdgeInsets.only(top:10,bottom:10,left:20),
+            child: Row(
+              children: [
+                new CircularProgressIndicator(),
+                Padding(
+                   padding: const EdgeInsets.only(left:20),
+                  child: new Text("Loading..."),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+  new Future.delayed(new Duration(seconds: 3), () {
+    Navigator.pop(context); //pop dialog
+    // _login();
+  });
+}
 
       
   @override

@@ -10,13 +10,14 @@ import 'package:demoapp/splash/splash.dart';
 import 'package:demoapp/utlis/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-Future <void> main() async{
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
 }
-  
+
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.
   @override
@@ -29,31 +30,26 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
       navigatorKey: navigatorKey,
       themeMode: ThemeMode.light,
-      theme: ThemeData(
-        primarySwatch: Colors.deepOrange
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark
-      ),
+      theme: ThemeData(primarySwatch: Colors.deepOrange),
+      darkTheme: ThemeData(brightness: Brightness.dark),
       // home: App(),
       initialRoute: "/",
       routes: {
         "/": (context) => SocailLogin(),
-        MyRoutes.splashRoutes:(context)=>Splash(),
-        MyRoutes.homepage:(context)=>Home(),
+        MyRoutes.splashRoutes: (context) => Splash(),
+        MyRoutes.homepage: (context) => Home(),
         MyRoutes.loginRoute: (context) => Login(),
         // MyRoutes.registerRoutes:(context)=>Signup(),
-        MyRoutes.forgetPasswordRoute:(context)=>ForgotPassword(),
-        MyRoutes.otpVerify:(context)=>OtpVerification(),
-        MyRoutes.resetPasswordOtp:(context)=>ResetPasswordOtp(),
-        MyRoutes.saveResetPassword:(context)=>SaveResetPassword()
+        MyRoutes.forgetPasswordRoute: (context) => ForgotPassword(),
+        MyRoutes.otpVerify: (context) => OtpVerification(),
+        MyRoutes.resetPasswordOtp: (context) => ResetPasswordOtp(),
+        MyRoutes.saveResetPassword: (context) => SaveResetPassword()
       },
     );
   }

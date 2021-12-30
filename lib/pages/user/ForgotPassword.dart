@@ -51,6 +51,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     print(checkCustresponse.statusCode);
     print("check");
     if (encryptedid != null) {
+       _onLoading();
       var sendVerifyOtp = await http.get(
           Uri.parse(Url.url + "/email/customerVerificationCode/{$encryptedid}"),
           headers: {
@@ -74,6 +75,36 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           .showSnackBar(SnackBar(content: Text('Email not Sent')));
     }
   }
+
+  void _onLoading() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Theme(
+            data: Theme.of(context).copyWith(dialogBackgroundColor: Colors.white),
+              child: Dialog(
+          child: Padding(
+            padding: const EdgeInsets.only(top:10,bottom:10,left:20),
+            child: Row(
+              children: [
+                new CircularProgressIndicator(),
+                Padding(
+                   padding: const EdgeInsets.only(left:20),
+                  child: new Text("Loading..."),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+  new Future.delayed(new Duration(seconds: 6), () {
+    Navigator.pop(context); //pop dialog
+    // _login();
+  });
+}
   @override
   Widget build(BuildContext context) {
     return
