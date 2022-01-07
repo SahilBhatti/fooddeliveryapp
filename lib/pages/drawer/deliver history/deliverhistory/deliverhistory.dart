@@ -28,7 +28,7 @@ class _OrderHistoryState extends State<OrderHistory> {
         leading: IconButton(
                     icon:Image.asset('assets/images/Layer 1.png'),
                     onPressed: () => {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Home()))
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Home(userEmail: '',)))
                                         },
                   ) ,
       ),

@@ -82,7 +82,7 @@ class ConfirmedDelivery extends StatefulWidget {
     padding: const EdgeInsets.fromLTRB(60, 0, 60, 0),
     child: TextButton(onPressed: (){
       Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> Home()));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> Home(userEmail: '',)));
     },child: Text('Okay!', 
     style: TextStyle(fontSize:20,color:Colors.black,fontWeight:FontWeight.bold),),),
   )

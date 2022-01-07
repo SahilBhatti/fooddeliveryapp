@@ -1,8 +1,8 @@
 import 'package:demoapp/pages/user/SocailLogin.dart';
+import 'package:demoapp/pages/user/googlesignin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart'as http;
 import 'package:demoapp/pages/user/urlmodal.dart';
 
@@ -14,7 +14,6 @@ class Logout extends StatefulWidget {
 
     class LogoutState extends State<Logout>
         with SingleTickerProviderStateMixin {
-          GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
     late  final AnimationController controller;
      late final Animation<double> scaleAnimation;
 
@@ -91,7 +90,8 @@ class Logout extends StatefulWidget {
                               child: Text('Cancel'.toUpperCase(),style: TextStyle(fontWeight:FontWeight.bold,)),
                             ),),
                             ElevatedButton(onPressed: ()async{
-                              await _googleSignIn.signOut();
+                              signOutGoogle();
+                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) {return SocailLogin();}), ModalRoute.withName('/'));
                               logout();
                               // Navigator.push(
                               // context,

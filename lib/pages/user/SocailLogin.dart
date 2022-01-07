@@ -1,14 +1,13 @@
-import 'dart:convert';
+
 
 import 'package:demoapp/constants/constants.dart';
 import 'package:demoapp/pages/drawer/drawer.dart';
 import 'package:demoapp/pages/user/Login.dart';
+import 'package:demoapp/pages/user/googlesignin.dart';
 import 'package:demoapp/utlis/platte.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart'as http;
 import 'package:hexcolor/hexcolor.dart';
 
 class SocailLogin extends StatefulWidget {
@@ -19,101 +18,39 @@ class SocailLogin extends StatefulWidget {
 }
 
 class _SocailLoginState extends State<SocailLogin> {
-  String _contactText = '';
-  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  String userEmail = '';
 
   Future<UserCredential> signInWithFacebook() async {
     // Trigger the sign-in flow
-    String userEmail = '';
     final LoginResult loginResult = await FacebookAuth.instance.login();
 
     // Create a credential from the access token
     final OAuthCredential facebookAuthCredential =
         FacebookAuthProvider.credential(loginResult.accessToken!.token);
-    final userData = await FacebookAuth.instance.getUserData();
-    userEmail = userData['email'];
-    print(userEmail);
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+    if (loginResult.status == LoginStatus.success) {
+      final userData = await FacebookAuth.instance.getUserData(
+        fields: 'email,name,picture.type(large)',
+      );
+      print(userData);
+      print("userData");
+       Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Home(
+                  userEmail: userEmail,
+                  // email: '',
+                )));
+    }
+
+   
     // Once signed in, return the UserCredential
     return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
   }
-
-  Future<void> _handleSignIn() async {
-    try {
-      await _googleSignIn.signIn();
-      print(_contactText);
-      print("_contactText");
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Home(
-                    // name: '',
-                    // email: '',
-                  )));
-    } catch (error) {
-      print(error);
-    }
-  }
-  GoogleSignInAccount? _currentUser;
    @override
   void initState() {
     super.initState();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      setState(() {
-        _currentUser = account;
-      });
-      if (_currentUser != null) {
-        _handleGetContact(_currentUser!);
-      }
-    });
-    _googleSignIn.signInSilently();
   }
 
-  Future<void> _handleGetContact(GoogleSignInAccount user) async {
-    setState(() {
-      _contactText = "Loading contact info...";
-    });
-    final http.Response response = await http.get(
-      Uri.parse('https://people.googleapis.com/v1/people/me/connections'
-          '?requestMask.includeField=person.names'),
-      headers: await user.authHeaders,
-    );
-    if (response.statusCode != 200) {
-      setState(() {
-        _contactText = "People API gave a ${response.statusCode} "
-            "response. Check logs for details.";
-      });
-      print('People API ${response.statusCode} response: ${response.body}');
-      return;
-    }
-    final Map<String, dynamic> data = json.decode(response.body);
-    final String? namedContact = _pickFirstNamedContact(data);
-    setState(() {
-      if (namedContact != null) {
-        _contactText = "I see you know $namedContact!";
-      } else {
-        _contactText = "No contacts to display.";
-      }
-    });
-  }
-
-  String? _pickFirstNamedContact(Map<String, dynamic> data) {
-    final List<dynamic>? connections = data['connections'];
-    final Map<String, dynamic>? contact = connections?.firstWhere(
-      (dynamic contact) => contact['names'] != null,
-      orElse: () => null,
-    );
-    if (contact != null) {
-      final Map<String, dynamic>? name = contact['names'].firstWhere(
-        (dynamic name) => name['displayName'] != null,
-        orElse: () => null,
-      );
-      if (name != null) {
-        return name['displayName'];
-      }
-    }
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +99,9 @@ class _SocailLoginState extends State<SocailLogin> {
                             ),
                             onPressed: () async {
                               signInWithFacebook();
+                              setState(() {
+                                userEmail = '$userEmail';
+                              });
                               // Navigator.push(context, MaterialPageRoute(builder: (context)=> Facebook()));
                               // validateData();
                             },
@@ -184,8 +124,23 @@ class _SocailLoginState extends State<SocailLogin> {
                               minimumSize: Size(double.infinity,
                                   44), // double.infinity is the width and 30 is the height
                             ),
-                            onPressed: () async {
-                               _handleSignIn();
+                            onPressed: ()  {
+                              signInWithGoogle().then((result) {
+                                      // ignore: unnecessary_null_comparison
+                                      if (result != null) {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return Home(
+                                                userEmail: '',
+                                                // name: '',
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      }
+                                    });
+                              //  _handleSignIn();
                               // await _googleSignIn.signIn();
                               setState(() {
                                 // Navigator.push(
