@@ -106,6 +106,24 @@ class DeliveryState extends State<Delivery>
                           navigateToPage4=true;
                         });
                       }),
+                      Padding(
+                    padding:
+                        const EdgeInsets.only(top: 40, left: 15, right: 30),
+                    child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
+                          child: Text(
+                            'Complete Delivery',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )),
+                  ),
                   Padding(
                     padding:
                         const EdgeInsets.only(top: 40, left: 15, right: 30),

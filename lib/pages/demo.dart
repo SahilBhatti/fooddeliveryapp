@@ -262,7 +262,7 @@ class _MapViewState extends State<MapView> {
   ) async {
     polylinePoints = PolylinePoints();
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      "AIzaSyCjZHsS0c1Iwtl62mR45AFV3wF0caxesaY", // Google Maps API Key
+      "AIzaSyDLdAEq-U9bDQdIkPGl9AXCELyly7Q9EnQ", // Google Maps API Key
       PointLatLng(startLatitude, startLongitude),
       PointLatLng(destinationLatitude, destinationLongitude),
       travelMode: TravelMode.transit,
@@ -275,7 +275,7 @@ class _MapViewState extends State<MapView> {
     PolylineId id = PolylineId('poly');
     Polyline polyline = Polyline(
       polylineId: id,
-      color: Colors.red,
+      color: Colors.green,
       points: polylineCoordinates,
       width: 3,
     );
@@ -384,12 +384,12 @@ class _MapViewState extends State<MapView> {
             // showing the route
             SafeArea(
               child: Align(
-                alignment: Alignment.topCenter,
+                alignment: Alignment.bottomCenter,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white70,
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.all(
                         Radius.circular(20.0),
                       ),
@@ -400,16 +400,13 @@ class _MapViewState extends State<MapView> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          Text(
-                            'Places',
-                            style: TextStyle(fontSize: 20.0),
-                          ),
-                          SizedBox(height: 10),
                           _textField(
                               hint: 'Choose starting point',
                               suffixIcon: IconButton(
                                 icon: Icon(Icons.my_location),
                                 onPressed: () {
+                                  _getAddress();
+                                  _currentAddress=startAddressController.text;
                                   startAddressController.text = _currentAddress;
                                   _startAddress = _currentAddress;
                                 },
@@ -502,7 +499,7 @@ class _MapViewState extends State<MapView> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Show Route'.toUpperCase(),
+                                'Confirm'.toUpperCase(),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20.0,

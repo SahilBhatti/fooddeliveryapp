@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
 
-        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyCjZHsS0c1Iwtl62mR45AFV3wF0caxesaY"/>
+        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyDLdAEq-U9bDQdIkPGl9AXCELyly7Q9EnQ"/>
         <!-- AIzaSyCjZHsS0c1Iwtl62mR45AFV3wF0caxesaY -->
         <!-- AIzaSyBTzw9b9M9ZgxFyxp30bqGoOz6Kn2K_6bQ -->
         <activity android:name=".MainActivity" android:launchMode="singleTop" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
