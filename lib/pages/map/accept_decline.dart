@@ -1,147 +1,49 @@
-import 'package:demoapp/pages/map/decline/alertdialog.dart';
 import 'package:demoapp/pages/map/helpalert.dart';
-import 'package:demoapp/pages/map/lookingfororders.dart';
+import 'dart:async';
+import 'dart:math';
 import 'package:demoapp/pages/map/map1.dart';
-import 'package:dotted_border/dotted_border.dart';
-import 'package:dotted_line/dotted_line.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
-// class Accept extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Google Map',
-//       // theme: ThemeData(
-//       //   brightness: Brightness.light,
-//       //   // primarySwatch: Colors.blue,
-//       // ),
-//       darkTheme: ThemeData(
-//         brightness: Brightness.dark,
-//         /* dark theme settings */
-//       ),
-//       home: AcceptView(),
-//     );
-//   }
-// }
 
-class Accept extends StatefulWidget {
-  final int title;
 
-  Accept(
-      {
-        Key? key,
-      required this.title,
-      })
-      : super(key: key);
-  @override
-  _AcceptState createState() => _AcceptState();
+Future<void> main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
+  runApp(Accept());
 }
 
-class _AcceptState extends State<Accept> {
-  Set<Polyline> lines = {};
-  // Completer<GoogleMapController> _controller = Completer();
-  TimeOfDay endTime = TimeOfDay.now();
-  var widget1;
-  var widget2;
-  // CameraPosition _initialLocation = CameraPosition(target: LatLng(0.0, 0.0));
-  late GoogleMapController mapController;
-  late Position _currentPosition;
-  String _currentAddress = '';
-  final startAddressController = TextEditingController();
-  final destinationAddressController = TextEditingController();
-  final startAddressFocusNode = FocusNode();
-  final desrinationAddressFocusNode = FocusNode();
-
-  Set<Marker> markers = {};
-  late PolylinePoints polylinePoints;
-  Map<PolylineId, Polyline> polylines = {};
-  List<LatLng> polylineCoordinates = [];
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  static final CameraPosition _kGooglePlex =
-      CameraPosition(target: LatLng(30.704649, 76.717873), zoom: 10);
-
-  // Method for retrieving the current location
-  _getCurrentLocation() async {
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) async {
-      setState(() {
-        _currentPosition = position;
-        print('CURRENT POS: $_currentPosition');
-        mapController.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: LatLng(position.latitude, position.longitude),
-              zoom: 18.0,
-            ),
-          ),
-        );
-      });
-      await _getAddress();
-    }).catchError((e) {
-      print(e);
-    });
+class Accept extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Google Map',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MapView(),
+    );
   }
+}
 
-  // Method for retrieving the address
-  _getAddress() async {
-    try {
-      List<Placemark> p = await placemarkFromCoordinates(
-          _currentPosition.latitude, _currentPosition.longitude);
-      Placemark place = p[0];
-      setState(() {
-        _currentAddress =
-            "${place.name}, ${place.locality}, ${place.postalCode}, ${place.country}";
-        startAddressController.text = _currentAddress;
-        // _startAddress = _currentAddress;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-  // Method for calculating the distance between two places
-
-  // Formula for calculating distance between two coordinates
-
-  // Create the polylines for showing the route between two places
+class MapView extends StatefulWidget {
+  const MapView({Key? key}) : super(key: key);
 
   @override
-  void initState() {
-    super.initState();
-    _getCurrentLocation();
-    lines.add(
-      Polyline(
-        color: Colors.blue,
-        points: [
-          LatLng(31.385296, 76.374893),
-          LatLng(30.975254, 76.527328),
-          LatLng(30.704649, 76.717873)
-        ],
-        endCap: Cap.squareCap,
-        geodesic: false,
-        polylineId: PolylineId("line_one"),
-      ),
-    );
-    lines.add(
-      Polyline(
-        points: [LatLng(30.704649, 76.717873), LatLng(30.741482, 76.768066)],
-        color: Colors.greenAccent,
-        polylineId: PolylineId("line_one"),
-      ),
-    );
-    // Future.delayed(Duration(seconds: 1), () {
-    //         print('yo hey');
-    //       });
-  }
+  _MapViewState createState() => _MapViewState();
+}
 
+class _MapViewState extends State<MapView> {
+  String origin="";
+  String destination='';
+String distance='';
+  String duration='';
   bool status = false;
   MapType _currentMapType = MapType.normal;
-
   void _toggleMapType() {
     setState(() {
       _currentMapType = (_currentMapType == MapType.normal)
@@ -150,331 +52,332 @@ class _AcceptState extends State<Accept> {
     });
   }
 
-  bool appBarName = false;
+  LatLng sourceLocation = LatLng(30.697600, 76.692280);
+  LatLng destinationLatlng = LatLng(30.704649, 76.717873);
+
+  Future checkDistance() async {
+    Dio dio = new Dio();
+    Response response = await dio.get(
+        "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=30.697600,76.692280&destinations=30.704649,76.717873&key=AIzaSyDLdAEq-U9bDQdIkPGl9AXCELyly7Q9EnQ");
+    print(response.data['destination_addresses'][0]);
+    // final distancedata = response.data;
+     origin = response.data['origin_addresses'][0];
+     destination=response.data['destination_addresses'][0];
+     distance=response.data['rows'][0]['elements'][0]['distance']['text'];
+     duration=response.data['rows'][0]['elements'][0]['duration']['text'];
+   print('.......................................');
+  }
+
+  
+
+  Set<Marker> _marker = Set<Marker>();
+
+  Set<Polyline> _polylines = Set<Polyline>();
+  List<LatLng> polylineCoordinates = [];
+  late PolylinePoints polylinePoints;
+
+  late StreamSubscription<LocationData> subscription;
+  Completer<GoogleMapController> _controller = Completer();
+  LocationData? currentLocation;
+  late LocationData destinationLocation;
+  late Location location;
+
+  @override
+  void initState() {
+    super.initState();
+    _calculate();
+    checkDistance();
+    // traveltime = time();
+    location = Location();
+    polylinePoints = PolylinePoints();
+
+    subscription = location.onLocationChanged.listen((clocation) {
+      currentLocation = clocation;
+      var live = currentLocation;
+      print(live);
+      updatePinsOnMap();
+    });
+
+    setInitialLocation();
+  }
+
+  void setInitialLocation() async {
+    await location.getLocation().then((value) {
+      currentLocation = value;
+      setState(() {});
+    });
+
+    destinationLocation = LocationData.fromMap({
+      "latitude": destinationLatlng.latitude,
+      "longitude": destinationLatlng.longitude,
+    });
+  }
+
+  String? _placeDistance;
+  showLocationPins() async {
+    var sourceposition = LatLng(
+        currentLocation!.latitude ?? 0.0, currentLocation!.longitude ?? 0.0);
+
+    var destinationPosition =
+        LatLng(destinationLatlng.latitude, destinationLatlng.longitude);
+
+    _marker.add(Marker(
+      markerId: MarkerId('sourcePosition'),
+      position: sourceposition,
+    ));
+
+    _marker.add(
+      Marker(
+        markerId: MarkerId('destinationPosition'),
+        position: destinationPosition,
+      ),
+    );
+
+    await setPolylinesInMap();
+    double totalDistance = 0.0;
+    // Calculating the total distance by adding the distance
+    // between small segments
+    for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+      totalDistance += _coordinateDistance(
+        polylineCoordinates[i].latitude,
+        polylineCoordinates[i].longitude,
+        polylineCoordinates[i + 1].latitude,
+        polylineCoordinates[i + 1].longitude,
+      );
+    }
+    setState(() {
+      _placeDistance = totalDistance.toStringAsFixed(2);
+      print('DISTANCE: $_placeDistance km');
+    });
+
+    // setPolylinesInMap();
+  }
+
+  double _coordinateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a));
+  }
+
+  _calculate() {
+    double totalDistance = 0.0;
+    for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+      totalDistance += _coordinateDistance(
+        polylineCoordinates[i].latitude,
+        polylineCoordinates[i].longitude,
+        polylineCoordinates[i + 1].latitude,
+        polylineCoordinates[i + 1].longitude,
+      );
+    }
+    setState(() {
+      _placeDistance = totalDistance.toStringAsFixed(2);
+      print('DISTANCE: $_placeDistance km');
+    });
+
+    return true;
+  }
+
+  setPolylinesInMap() async {
+    var result = await polylinePoints.getRouteBetweenCoordinates(
+      "AIzaSyDLdAEq-U9bDQdIkPGl9AXCELyly7Q9EnQ",
+      PointLatLng(
+          currentLocation!.latitude ?? 0.0, currentLocation!.longitude ?? 0.0),
+      PointLatLng(destinationLatlng.latitude, destinationLatlng.longitude),
+    );
+
+    if (result.points.isNotEmpty) {
+      result.points.forEach((pointLatLng) {
+        polylineCoordinates
+            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+      });
+    }
+
+    setState(() {
+      _polylines.add(Polyline(
+        width: 5,
+        polylineId: PolylineId('polyline'),
+        color: Colors.blueAccent,
+        points: polylineCoordinates,
+      ));
+      print(polylineCoordinates);
+      print("polylineCoordinates");
+    });
+  }
+
+  void updatePinsOnMap() async {
+    CameraPosition cameraPosition = CameraPosition(
+      zoom: 20,
+      tilt: 80,
+      bearing: 30,
+      target: LatLng(
+          currentLocation!.latitude ?? 0.0, currentLocation!.longitude ?? 0.0),
+    );
+
+    final GoogleMapController controller = await _controller.future;
+
+    controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    var sourcePosition = LatLng(
+        currentLocation!.latitude ?? 0.0, currentLocation!.longitude ?? 0.0);
+
+    setState(() {
+      _marker.removeWhere((marker) => marker.mapsId.value == 'sourcePosition');
+
+      _marker.add(Marker(
+        markerId: MarkerId('sourcePosition'),
+        position: sourcePosition,
+      ));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
-    // DateTime now = new DateTime.now();
+    print(distance);
+    print("distance....................................");
 
-    return Container(
-      height: height,
-      width: width,
-      child: Scaffold(
-        key: _scaffoldKey,
-        // extendBodyBehindAppBar: true,
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title:Text(
+    CameraPosition initialCameraPosition = CameraPosition(
+      zoom: 20,
+      tilt: 80,
+      bearing: 30,
+      target: currentLocation != null
+          ? LatLng(currentLocation!.latitude ?? 0.0,
+              currentLocation!.longitude ?? 0.0)
+          : LatLng(0.0, 0.0),
+    );
+
+    return currentLocation == null
+        ? Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            alignment: Alignment.center,
+            child: CircularProgressIndicator(),
+          )
+        : SafeArea(
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(
                   'Accept or Decline',
                   style: TextStyle(color: Colors.black, fontSize: 15),
                 ),
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Image.asset('assets/images/Layer 1.png'),
-            onPressed: () => {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => GetLocation()))
-            },
-          ),
-          // elevation: 0,
-          actions: [
-            Builder(
-              builder: (context) => TextButton(
-                child: Text(
-                  'HELP',
-                  style:
-                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                ),
-                onPressed: () async {
-                  showDialog(
-                    context: context,
-                    builder: (_) => (Help()),
-                  );
-                },
-              ),
-            )
-          ],
-        ),
-
-        body: Stack(
-          children: <Widget>[
-            // Map View
-            GoogleMap(
-              markers: Set<Marker>.from(markers),
-              initialCameraPosition: _kGooglePlex,
-              compassEnabled: false,
-              mapToolbarEnabled: false,
-              tiltGesturesEnabled: false,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              mapType: _currentMapType,
-              zoomGesturesEnabled: true,
-              zoomControlsEnabled: false,
-              // polylines: Set<Polyline>.of(polylines.values),
-              onMapCreated: (GoogleMapController controller) {
-                mapController = controller;
-              },
-              polylines: lines,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 500, right: 200),
-              child: FlutterSwitch(
-                activeTextColor: Colors.transparent,
-                inactiveTextColor: Colors.transparent,
-                width: 50.0,
-                height: 30.0,
-                value: status,
-                borderRadius: 30.0,
-                padding: 1.0,
-                activeColor: Color(0xFFfdbc35),
-                showOnOff: true,
-                onToggle: (val) {
-                  setState(() {
-                    status = val;
-                    _toggleMapType();
-                  });
-                },
-              ),
-            ),
-            Center(child: Text(widget.title.toString(), style:TextStyle(color: Colors.black, fontWeight:FontWeight.bold)))
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future selectedTime(BuildContext context, bool ifPickedTime,
-      TimeOfDay initialTime, Function(TimeOfDay) onTimePicked) async {
-    var _pickedTime =
-        await showTimePicker(context: context, initialTime: initialTime);
-    if (_pickedTime != null) {
-      onTimePicked(_pickedTime);
-      Navigator.pop(context);
-      // Future.delayed(Duration(seconds: 1), () {
-      //         print('yo hey');
-      //       });
-      showModalBottomSheet(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(30),
-              topLeft: Radius.circular(30),
-            ),
-          ),
-          backgroundColor: Colors.white,
-          context: context,
-          builder: (context) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 20),
-                  child: Image.asset('assets/images/up gray arrow.png'),
-                ),
-                TextButton(
-                  onPressed: () {
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                centerTitle: true,
+                leading: IconButton(
+                  icon: Image.asset('assets/images/Layer 1.png'),
+                  onPressed: () => {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Order()));
+                        MaterialPageRoute(builder: (context) => GetLocation()))
                   },
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 220, bottom: 10),
-                        child: Text(
-                          'West-End',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: 140,
-                        ),
-                        child: TextButton(
-                          child: Text('Hotspot for Others',
-                              style: TextStyle(color: Colors.black)),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            showModalBottomSheet(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(30),
-                                    topLeft: Radius.circular(30),
-                                  ),
-                                ),
-                                backgroundColor: Colors.black,
-                                context: context,
-                                builder: (context) {
-                                  return StatefulBuilder(
-                                      builder: (BuildContext context,
-                                              StateSetter
-                                                  setState /*You can rename this!*/) =>
-                                          Modal3());
-                                });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ],
-            );
-          });
-    }
-  }
-}
-
-class Modal3 extends StatefulWidget {
-  @override
-  State<Modal3> createState() => _Modal3State();
-}
-
-class _Modal3State extends State<Modal3> {
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // code
-        Stack(
-          children: <Widget>[
-            Container(
-              // constraints:
-              //     new BoxConstraints(maxHeight: 50.0, maxWidth: 50.0),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(30)),
-              child: DottedBorder(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Color(0xFFf4b71e),
-                        borderRadius: BorderRadius.circular(30)),
-                    child: Image.asset('assets/images/Path 14648.png'),
-                  ),
-                ),
-                borderType: BorderType.Circle,
-                color: Colors.grey,
-                dashPattern: [5, 5],
-                radius: Radius.circular(30),
-              ),
-            ),
-            Container(
-              height: 225,
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(30)),
-              child: DottedBorder(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 55),
-                            child: Text(
-                              'Deliver by 3:24 PM',
-                            ),
-                          ),
-                          Text(' 4 Items')
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          'Monicas Trattoria',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        Text(' 5.3 mi total'),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25, right: 25),
-                      child: DottedLine(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+                // elevation: 0,
+                actions: [
+                  Builder(
+                    builder: (context) => TextButton(
                       child: Text(
-                        r'$7.22',
+                        'HELP',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
+                            color: Colors.red, fontWeight: FontWeight.bold),
                       ),
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          builder: (_) => (Help()),
+                        );
+                      },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Guaranteed including tips'),
+                  )
+                ],
+              ),
+              body: Stack(
+                children: [
+                  GoogleMap(
+                    myLocationButtonEnabled: true,
+                    compassEnabled: true,
+                    markers: _marker,
+                    polylines: _polylines,
+                    mapType: MapType.normal,
+                    initialCameraPosition: initialCameraPosition,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+
+                      showLocationPins();
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 500, right: 200),
+                    child: FlutterSwitch(
+                      activeTextColor: Colors.transparent,
+                      inactiveTextColor: Colors.transparent,
+                      width: 50.0,
+                      height: 30.0,
+                      value: status,
+                      borderRadius: 30.0,
+                      padding: 1.0,
+                      activeColor: Color(0xFFfdbc35),
+                      showOnOff: true,
+                      onToggle: (val) {
+                        setState(() {
+                          status = val;
+                          _toggleMapType();
+                        });
+                      },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Color(0xFF315797),
-                              ),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(40, 5, 40, 5),
-                                child: TextButton(
-                                  onPressed: () {
-                                  },
-                                  child: Text(
-                                    'ACCEPT',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Color(0xFFd63229),
-                              ),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(40, 5, 40, 5),
-                                child: TextButton(
-                                    onPressed: () async {
-                                      showDialog(
-                                        context: context,
-                                        builder: (_) => LogoutOverlay(),
-                                      );
-                                    },
-                                    child: Text(
-                                      'DECLINE',
-                                      style: TextStyle(color: Colors.white),
-                                    )),
-                              ),
-                            ),
-                          ]),
-                    )
-                  ],
-                ),
-                borderType: BorderType.RRect,
-                color: Colors.grey,
-                dashPattern: [10, 10],
-                radius: Radius.circular(30),
+                  ),
+                  // Align(
+                  //   alignment: Alignment.topCenter,
+                  //   child: Text('title'+title)),
+                  // Align(
+                  //   alignment: Alignment.topCenter,
+                  //   child: Container(
+                  //     child: FutureBuilder(
+                  //       future: checkDistance(),
+                  //       builder: (context, snapshot) {
+                  //         if (snapshot.hasData) {
+                  //           return Column(
+                  //             children: [
+                  //               Text(duration),
+                  //               Text(distance),
+                  //               // Text(
+                  //               //   'Expected Time: ' + snapshot.data!.toString(),
+                  //               //   style: TextStyle(color: Colors.black),
+                  //               // ),
+                  //               Text(
+                  //                 "Distance: $_placeDistance km",
+                  //                 style: TextStyle(color: Colors.white),
+                  //               ),
+                  //             ],
+                  //           );
+                  //         } else if (snapshot.hasError) {
+                  //           return Text('${snapshot.error}');
+                  //         }
+
+                  //         // By default, show a loading spinner.
+                  //         return const CircularProgressIndicator();
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                                      child: Column(
+                                        children: [
+                                          Text("Distance: "+distance),
+                                          Text("Expected Travel Time: "+duration)
+                                        ],
+                                      ),
+                  )
+                ],
               ),
             ),
-          ],
-        ),
-      ],
-    );
+          );
+  }
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
   }
 }

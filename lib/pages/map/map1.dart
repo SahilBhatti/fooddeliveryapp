@@ -2,8 +2,8 @@ import 'package:demoapp/main.dart';
 import 'package:demoapp/pages/map/accept/deliverydialog.dart';
 import 'package:demoapp/pages/map/accept_decline.dart';
 import 'package:demoapp/pages/map/decline/alertdialog.dart';
+import 'package:demoapp/pages/map/finaldelivery.dart';
 import 'package:demoapp/pages/map/lookingfororders.dart';
-import 'package:demoapp/pages/newmap/index.dart';
 import 'package:demoapp/utlis/platte.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:dotted_line/dotted_line.dart';
@@ -18,16 +18,17 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:slide_drawer/slide_drawer.dart';
 
-const AndroidNotificationChannel channel=AndroidNotificationChannel(
-  'high_importance_channel',
-  'high_importance_notifications',importance: Importance.high,playSound: true);
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', 'high_importance_notifications',
+    importance: Importance.high, playSound: true);
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin=FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
-  Future <void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async{
-    await Firebase.initializeApp();
-    print('a big message just showing up:${message.messageId}');
-  }
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print('a big message just showing up:${message.messageId}');
+}
 
 // Future <void> main() async{
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -137,15 +138,15 @@ class _MapViewState extends State<MapView> {
     _getCurrentLocation();
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    FirebaseMessaging.onMessage.listen((RemoteMessage message){
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("onMessage: $message");
       // RemoteNotification ?notification=message.notification;
       // AndroidNotification ?android=message.notification?.android;
 
       // if(notification!=null && android!=null){
       //   flutterLocalNotificationsPlugin.show(
-      //     notification.hashCode, 
-      //     notification.title, 
+      //     notification.hashCode,
+      //     notification.title,
       //     notification.body,
       //     NotificationDetails(
       //       android:AndroidNotificationDetails(
@@ -159,66 +160,59 @@ class _MapViewState extends State<MapView> {
       // }
     });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message){
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       // print('a new message');
       print("onMessageOpenedApp: $message");
       if (message.data["navigation"] == "/your_route") {
-            int _yourId = int.tryParse(message.data["id"]) ?? 0;
-            Navigator.push(
-              navigatorKey.currentState!.context,
-                    // navigatorKey.currentState.context,
-                    MaterialPageRoute(
-                        builder: (context) => Accept(
-                              title:_yourId,
-                            )));
-        }});
-      // RemoteNotification ?notification=message.notification;
-      // AndroidNotification ?android=message.notification?.android;
-      // if(notification!=null && android!=null){
-      //   showDialog(
-      //   context: context,
-      //   builder: (BuildContext context) => new AlertDialog(
-      //     title: new Text(channel.id),
-      //     content: new Text(channel.name),
-      //     actions: <Widget>[
-      //       new IconButton(
-      //           icon: new Icon(Icons.close),
-      //           onPressed: () {
-      //             Navigator.pop(context);
-      //           })
-      //     ],
-      //   ));
-      // }
-        // });
-      
+        // int _yourId = int.tryParse(message.data["id"]) ?? 0;
+        Navigator.push(
+            navigatorKey.currentState!.context,
+            // navigatorKey.currentState.context,
+            MaterialPageRoute(builder: (context) => Accept()));
+      }
+    });
+    // RemoteNotification ?notification=message.notification;
+    // AndroidNotification ?android=message.notification?.android;
+    // if(notification!=null && android!=null){
+    //   showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) => new AlertDialog(
+    //     title: new Text(channel.id),
+    //     content: new Text(channel.name),
+    //     actions: <Widget>[
+    //       new IconButton(
+    //           icon: new Icon(Icons.close),
+    //           onPressed: () {
+    //             Navigator.pop(context);
+    //           })
+    //     ],
+    //   ));
+    // }
+    // });
   }
 
   MapType _currentMapType = MapType.normal;
 
-  void _toggleMapType(){    
-   setState(() {
-       _currentMapType = (_currentMapType == MapType.normal) ? MapType.satellite : MapType.normal;  
-   });
-}
+  void _toggleMapType() {
+    setState(() {
+      _currentMapType = (_currentMapType == MapType.normal)
+          ? MapType.satellite
+          : MapType.normal;
+    });
+  }
 
-
-
-void showNotification(){
-      flutterLocalNotificationsPlugin.show(
+  void showNotification() {
+    flutterLocalNotificationsPlugin.show(
         0,
         '+0987654321',
         'New Order: 3323, Ground Floor, GR Tower, Mohali',
-        NotificationDetails(android: 
-        AndroidNotificationDetails(
-        channel.id, 
-        channel.name, 
-        importance: Importance.high,
-        color: Colors.blue,
-        playSound: true,
-        icon: '@mipmap/ic_launcher'
-        )));
-    }
-
+        NotificationDetails(
+            android: AndroidNotificationDetails(channel.id, channel.name,
+                importance: Importance.high,
+                color: Colors.blue,
+                playSound: true,
+                icon: '@mipmap/ic_launcher')));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -280,32 +274,31 @@ void showNotification(){
               alignment: Alignment.bottomCenter,
               child: Column(
                 children: [
-
                   Padding(
                     padding: const EdgeInsets.only(bottom: 400, left: 30),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                         Padding(
-                           padding: const EdgeInsets.only(top:30),
-                           child: FlutterSwitch(
-                             activeTextColor: Colors.transparent,
-                             inactiveTextColor: Colors.transparent,
-                    width: 50.0,
-                    height: 30.0,
-                    value: status,
-                    borderRadius: 30.0,
-                    padding: 1.0,
-                    activeColor: Color(0xFFfdbc35),
-                    showOnOff: true,
-                    onToggle: (val) {
-                      setState(() {
-                        status = val;
-                        _toggleMapType();
-                      });
-                    },
-                  ),
-                         ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 30),
+                          child: FlutterSwitch(
+                            activeTextColor: Colors.transparent,
+                            inactiveTextColor: Colors.transparent,
+                            width: 50.0,
+                            height: 30.0,
+                            value: status,
+                            borderRadius: 30.0,
+                            padding: 1.0,
+                            activeColor: Color(0xFFfdbc35),
+                            showOnOff: true,
+                            onToggle: (val) {
+                              setState(() {
+                                status = val;
+                                _toggleMapType();
+                              });
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -325,44 +318,51 @@ void showNotification(){
                           backgroundColor: Colors.white,
                           context: context,
                           builder: (context) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10, bottom: 20),
-                                  child: Image.asset(
-                                      'assets/images/up gray arrow.png'),
-                                ),
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 20),
-                                      child: Text(
-                                          'Select End Time (North-End Boston)',
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.black)),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 80),
-                                      child: _buildTimePick(
-                                          "Click Button:", true, endTime, (x) {
-                                        setState(() {
-                                          endTime = x;
-                                          print("The picked time is: $x");
-                                        });
-                                      }),
-                                    ),
-                                    // Padding(
-                                    //   padding: const EdgeInsets.all(8.0),
-                                    //   child: Text('${now.hour}hours ${now.minute}min'),
-                                    // ),
-                                  ],
-                                ),
-                                SizedBox(height: 20)
-                              ],
+                            return StatefulBuilder(
+                              builder: (BuildContext context,
+                                      StateSetter
+                                          setState /*You can rename this!*/) =>
+                                  Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 10, bottom: 20),
+                                    child: Image.asset(
+                                        'assets/images/up gray arrow.png'),
+                                  ),
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 20),
+                                        child: Text(
+                                            'Select End Time (North-End Boston)',
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.black)),
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 80),
+                                        child: _buildTimePick(
+                                            "Click Button:", true, endTime,
+                                            (x) {
+                                          setState(() {
+                                            endTime = x;
+                                            print("The picked time is: $x");
+                                          });
+                                        }),
+                                      ),
+                                      // Padding(
+                                      //   padding: const EdgeInsets.all(8.0),
+                                      //   child: Text('${now.hour}hours ${now.minute}min'),
+                                      // ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 20)
+                                ],
+                              ),
                             );
                           });
                     },
@@ -432,7 +432,7 @@ void showNotification(){
         SizedBox(
           width: 80,
           child: Text(
-            title,
+            title,style:TextStyle(color: Colors.black)
           ),
         ),
         Container(
@@ -443,7 +443,7 @@ void showNotification(){
           ),
           child: GestureDetector(
             child: Text(
-              currentTime.format(context),
+              currentTime.format(context),style:TextStyle(color: Colors.black)
             ),
             onTap: () {
               selectedTime(context, ifPickedTime, currentTime, onTimePicked);
@@ -462,8 +462,7 @@ Future selectedTime(BuildContext context, bool ifPickedTime,
   if (_pickedTime != null) {
     onTimePicked(_pickedTime);
     Navigator.pop(context);
-    Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Order()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Order()));
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -548,491 +547,479 @@ class _ModalState extends State<Modal> {
   bool selected4 = false;
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-        initialChildSize: 0.5, // half screen on load
-        maxChildSize: 1, // full screen on scroll
-        minChildSize: 0.25,
-        builder: (BuildContext context, ScrollController scrollController) {
-          return SingleChildScrollView(
-                      child: Column(
-              // mainAxisSize: MainAxisSize.min,
+    return SingleChildScrollView(
+      child: Column(
+        // mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            constraints: new BoxConstraints(maxHeight: 650.0, maxWidth: 360.0),
+            child: Stack(
               children: [
-                Container(
-                  constraints:
-                      new BoxConstraints(maxHeight: 650.0, maxWidth: 360.0),
-                  child: ListView(
-                    controller: scrollController,
-                                    children:[ Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 40),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20))),
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: Column(children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: [
-                                    IconButton(
-                                        onPressed: () {},
-                                        icon: Image.asset(
-                                            'assets/images/down arrow.png')),
-                                    Text('Your Customer'),
-                                    IconButton(
-                                        onPressed: () {},
-                                        icon: Image.asset(
-                                            'assets/images/directiondfssd.png'))
-                                  ],
-                                ),
-                                Text('Subrina Lorenshtein',
-                                    style: TextStyle(fontSize: 20)),
-                                Text('Invoice No. 30WT43gd54'),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('Pickup by: '),
-                                    Text(
-                                      '3:22PM',
-                                      style: TextStyle(
-                                          color: Color(0xFF1d75e6),
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                                Row(children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 40),
-                                    child: Text('Order details:'),
-                                  )
-                                ]),
-                                Row(children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 40),
-                                    child: Text('Pickup 4 items'),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 100),
-                                    child: Text('Subtotal: '),
-                                  ),
-                                  Text(
-                                    r'$33.75',
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                ]),
-                                SingleChildScrollView(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(30, 20, 30, 10),
-                                    child: DottedBorder(
-                                      child: Row(children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 20),
-                                          child: GestureDetector(
-                                              onTap: () => setState(() {
-                                                    selected = !selected;
-                                                  }),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(50),
-                                                    color: selected
-                                                        ? Colors.white
-                                                        : Colors.green),
-                                                child: DottedBorder(
-                                                    borderType: BorderType.Circle,
-                                                    radius: Radius.circular(10),
-                                                    color: selected
-                                                        ? Colors.black
-                                                        : Colors.green,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.fromLTRB(
-                                                              11, 7, 11, 7),
-                                                      child: Text(
-                                                        '1',
-                                                        style: TextStyle(
-                                                          color: selected
-                                                              ? Colors.black
-                                                              : Colors.white,
-                                                        ),
-                                                      ),
-                                                    )),
-                                              )),
-                                        ),
-                                        Image.asset(
-                                            'assets/images/product imagedfsdf.png'),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Chocomocco',
-                                                style: TextStyle(fontSize: 15),
-                                              ),
-                                              Text(
-                                                'Cupcake consequent ',
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                              Text(
-                                                'sapien utcursus. duis in molis de',
-                                                style: TextStyle(fontSize: 10),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ]),
-                                      borderType: BorderType.RRect,
-                                      color: Colors.grey,
-                                      dashPattern: [5, 5],
-                                      radius: Radius.circular(10),
-                                    ),
-                                  ),
-                                ),
-                                SingleChildScrollView(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(30, 0, 30, 10),
-                                    child: DottedBorder(
-                                      child: Row(children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 20),
-                                          child: GestureDetector(
-                                              onTap: () => setState(() {
-                                                    selected2 = !selected2;
-                                                  }),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(50),
-                                                    color: selected2
-                                                        ? Colors.white
-                                                        : Colors.green),
-                                                child: DottedBorder(
-                                                    borderType: BorderType.Circle,
-                                                    radius: Radius.circular(10),
-                                                    color: selected2
-                                                        ? Colors.black
-                                                        : Colors.green,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.fromLTRB(
-                                                              11, 7, 11, 7),
-                                                      child: Text(
-                                                        '2',
-                                                        style: TextStyle(
-                                                          color: selected2
-                                                              ? Colors.black
-                                                              : Colors.white,
-                                                        ),
-                                                      ),
-                                                    )),
-                                              )),
-                                        ),
-                                        Image.asset(
-                                            'assets/images/product imageasdsa.png'),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'FooDoorer Fries',
-                                                style: TextStyle(fontSize: 15),
-                                              ),
-                                              Text(
-                                                'Potatoes consequent ',
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                              Text(
-                                                'sapien utcursus. duis in molis de',
-                                                style: TextStyle(fontSize: 10),
-                                              ),
-                                              //
-                                            ],
-                                          ),
-                                        )
-                                      ]),
-                                      borderType: BorderType.RRect,
-                                      color: Colors.grey,
-                                      dashPattern: [5, 5],
-                                      radius: Radius.circular(10),
-                                    ),
-                                  ),
-                                ),
-                                SingleChildScrollView(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(30, 0, 30, 10),
-                                    child: DottedBorder(
-                                      child: Row(children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 20),
-                                          child: GestureDetector(
-                                              onTap: () => setState(() {
-                                                    selected3 = !selected3;
-                                                  }),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(50),
-                                                    color: selected3
-                                                        ? Colors.white
-                                                        : Colors.green),
-                                                child: DottedBorder(
-                                                    borderType: BorderType.Circle,
-                                                    radius: Radius.circular(10),
-                                                    color: selected3
-                                                        ? Colors.black
-                                                        : Colors.green,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.fromLTRB(
-                                                              11, 7, 11, 7),
-                                                      child: Text(
-                                                        '1',
-                                                        style: TextStyle(
-                                                          color: selected3
-                                                              ? Colors.black
-                                                              : Colors.white,
-                                                        ),
-                                                      ),
-                                                    )),
-                                              )),
-                                        ),
-                                        Image.asset(
-                                            'assets/images/product imageasdasd.png'),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 15),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Burger King',
-                                                style: TextStyle(fontSize: 15),
-                                              ),
-                                              Text(
-                                                'Cras blandit consequent ',
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                              Text(
-                                                'sapien utcursus. duis in',
-                                                style: TextStyle(fontSize: 10),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ]),
-                                      borderType: BorderType.RRect,
-                                      color: Colors.grey,
-                                      dashPattern: [5, 5],
-                                      radius: Radius.circular(10),
-                                    ),
-                                  ),
-                                ),
-                                SingleChildScrollView(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(30, 0, 30, 10),
-                                    child: DottedBorder(
-                                      child: Row(children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 20),
-                                          child: GestureDetector(
-                                              onTap: () => setState(() {
-                                                    selected4 = !selected4;
-                                                  }),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(50),
-                                                    color: selected4
-                                                        ? Colors.white
-                                                        : Colors.green),
-                                                child: DottedBorder(
-                                                    borderType: BorderType.Circle,
-                                                    radius: Radius.circular(10),
-                                                    color: selected4
-                                                        ? Colors.black
-                                                        : Colors.green,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.fromLTRB(
-                                                              11, 7, 11, 7),
-                                                      child: Text(
-                                                        '1',
-                                                        style: TextStyle(
-                                                          color: selected4
-                                                              ? Colors.black
-                                                              : Colors.white,
-                                                        ),
-                                                      ),
-                                                    )),
-                                              )),
-                                        ),
-                                        Image.asset(
-                                            'assets/images/product image.png'),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 20),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Cocacola(330 ml)',
-                                                style: TextStyle(fontSize: 15),
-                                              ),
-                                              Text(
-                                                'Cras blandit consequent ',
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                              Text(
-                                                'sapien utcursus. duis in',
-                                                style: TextStyle(fontSize: 10),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ]),
-                                      borderType: BorderType.RRect,
-                                      color: Colors.grey,
-                                      dashPattern: [5, 5],
-                                      radius: Radius.circular(10),
-                                    ),
-                                  ),
-                                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20))),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            IconButton(
+                                onPressed: () {},
+                                icon: Image.asset(
+                                    'assets/images/down arrow.png')),
+                            Text('Your Customer',style:TextStyle(color: Colors.black)),
+                            IconButton(
+                                onPressed: () {},
+                                icon: Image.asset(
+                                    'assets/images/directiondfssd.png'))
+                          ],
+                        ),
+                        Text('Subrina Lorenshtein',
+                            style: TextStyle(fontSize: 20,color: Colors.black)),
+                        Text('Invoice No. 30WT43gd54',style:TextStyle(color: Colors.black)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Pickup by: ',style:TextStyle(color: Colors.black)),
+                            Text(
+                              '3:22PM',
+                              style: TextStyle(
+                                  color: Color(0xFF1d75e6),
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Row(children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 40),
+                            child: Text('Order details:',style:TextStyle(color: Colors.black)),
+                          )
+                        ]),
+                        Row(children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 40),
+                            child: Text('Pickup 4 items',style:TextStyle(color: Colors.black)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 100),
+                            child: Text('Subtotal: ',style:TextStyle(color: Colors.black)),
+                          ),
+                          Text(
+                            r'$33.75',
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ]),
+                        SingleChildScrollView(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(30, 20, 30, 10),
+                            child: DottedBorder(
+                              child: Row(children: [
                                 Padding(
-                                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Container(
-                                          child: Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: OutlinedButton(
-                                              onPressed: () => {
-                                                // Navigator.push(context, MaterialPageRoute(builder: (context)=> Password()))
-                                              },
-                                              child: Padding(
-                                                padding: const EdgeInsets.fromLTRB(
-                                                    45, 20, 45, 20),
-                                                child: Image.asset(
-                                                    'assets/images/387-3871744_message-bubble-png-bubble-message-icon-png-clipart.png'),
-                                              ),
-                                              style: OutlinedButton.styleFrom(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: GestureDetector(
+                                      onTap: () => setState(() {
+                                            selected = !selected;
+                                          }),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            color: selected
+                                                ? Colors.white
+                                                : Colors.green),
+                                        child: DottedBorder(
+                                            borderType: BorderType.Circle,
+                                            radius: Radius.circular(10),
+                                            color: selected
+                                                ? Colors.black
+                                                : Colors.green,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      11, 7, 11, 7),
+                                              child: Text(
+                                                '1',
+                                                style: TextStyle(
+                                                  color: selected
+                                                      ? Colors.black
+                                                      : Colors.white,
                                                 ),
-                                                side: BorderSide(
-                                                    width: 1, color: Colors.blue),
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          child: Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: OutlinedButton(
-                                              onPressed: () => {
-                                                // Navigator.push(context, MaterialPageRoute(builder: (context)=> Password()))
-                                              },
-                                              child: Padding(
-                                                padding: const EdgeInsets.fromLTRB(
-                                                    45, 20, 45, 20),
-                                                child: Image.asset(
-                                                    'assets/images/ic_31_sd.png'),
-                                              ),
-                                              style: OutlinedButton.styleFrom(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                ),
-                                                side: BorderSide(
-                                                    width: 1, color: Colors.red),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      bottom: 20, left: 25, right: 25),
-                                  child: Container(
-                                      margin: const EdgeInsets.only(top: 10),
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          primary: Color(0xFF265395),
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10.0, horizontal: 5.0),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0)),
-                                          elevation: 8.0,
-                                          minimumSize: Size(double.infinity,
-                                              44), // double.infinity is the width and 30 is the height
-                                        ),
-                                        onPressed: () {
-                                                            Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => FinalDelivery()));
-                 
-                                        },
-                                        child: Text(
-                                            "Click After Pickup".toUpperCase(),
-                                            style: btnWhiteText),
+                                            )),
                                       )),
                                 ),
+                                Image.asset(
+                                    'assets/images/product imagedfsdf.png'),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Chocomocco',
+                                        style: TextStyle(fontSize: 15,color:Colors.black),
+                                      ),
+                                      Text(
+                                        'Cupcake consequent ',
+                                        style: TextStyle(fontSize: 12,color:Colors.black),
+                                      ),
+                                      Text(
+                                        'sapien utcursus. duis in molis de',
+                                        style: TextStyle(fontSize: 10,color:Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                )
                               ]),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 150.0,
-                          bottom: 585.0,
-                          child: Container(
-                            constraints:
-                                new BoxConstraints(maxHeight: 50.0, maxWidth: 50.0),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30)),
-                            child: DottedBorder(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Color(0xFFf4b71e),
-                                      borderRadius: BorderRadius.circular(30)),
-                                  child:
-                                      Image.asset('assets/images/Path 14648.png'),
-                                ),
-                              ),
-                              borderType: BorderType.Circle,
+                              borderType: BorderType.RRect,
                               color: Colors.grey,
                               dashPattern: [5, 5],
-                              radius: Radius.circular(30),
+                              radius: Radius.circular(10),
                             ),
                           ),
                         ),
-                      ],
-                    ),]
+                        SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(30, 0, 30, 10),
+                            child: DottedBorder(
+                              child: Row(children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: GestureDetector(
+                                      onTap: () => setState(() {
+                                            selected2 = !selected2;
+                                          }),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            color: selected2
+                                                ? Colors.white
+                                                : Colors.green),
+                                        child: DottedBorder(
+                                            borderType: BorderType.Circle,
+                                            radius: Radius.circular(10),
+                                            color: selected2
+                                                ? Colors.black
+                                                : Colors.green,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      11, 7, 11, 7),
+                                              child: Text(
+                                                '2',
+                                                style: TextStyle(
+                                                  color: selected2
+                                                      ? Colors.black
+                                                      : Colors.white,
+                                                ),
+                                              ),
+                                            )),
+                                      )),
+                                ),
+                                Image.asset(
+                                    'assets/images/product imageasdsa.png'),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'FooDoorer Fries',
+                                        style: TextStyle(fontSize: 15,color: Colors.black),
+                                      ),
+                                      Text(
+                                        'Potatoes consequent ',
+                                        style: TextStyle(fontSize: 12,color: Colors.black),
+                                      ),
+                                      Text(
+                                        'sapien utcursus. duis in molis de',
+                                        style: TextStyle(fontSize: 10,color: Colors.black),
+                                      ),
+                                      //
+                                    ],
+                                  ),
+                                )
+                              ]),
+                              borderType: BorderType.RRect,
+                              color: Colors.grey,
+                              dashPattern: [5, 5],
+                              radius: Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(30, 0, 30, 10),
+                            child: DottedBorder(
+                              child: Row(children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: GestureDetector(
+                                      onTap: () => setState(() {
+                                            selected3 = !selected3;
+                                          }),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            color: selected3
+                                                ? Colors.white
+                                                : Colors.green),
+                                        child: DottedBorder(
+                                            borderType: BorderType.Circle,
+                                            radius: Radius.circular(10),
+                                            color: selected3
+                                                ? Colors.black
+                                                : Colors.green,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      11, 7, 11, 7),
+                                              child: Text(
+                                                '1',
+                                                style: TextStyle(
+                                                  color: selected3
+                                                      ? Colors.black
+                                                      : Colors.white,
+                                                ),
+                                              ),
+                                            )),
+                                      )),
+                                ),
+                                Image.asset(
+                                    'assets/images/product imageasdasd.png'),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 15),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Burger King',
+                                        style: TextStyle(fontSize: 15,color: Colors.black),
+                                      ),
+                                      Text(
+                                        'Cras blandit consequent ',
+                                        style: TextStyle(fontSize: 12,color: Colors.black),
+                                      ),
+                                      Text(
+                                        'sapien utcursus. duis in',
+                                        style: TextStyle(fontSize: 10,color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ]),
+                              borderType: BorderType.RRect,
+                              color: Colors.grey,
+                              dashPattern: [5, 5],
+                              radius: Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(30, 0, 30, 10),
+                            child: DottedBorder(
+                              child: Row(children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: GestureDetector(
+                                      onTap: () => setState(() {
+                                            selected4 = !selected4;
+                                          }),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            color: selected4
+                                                ? Colors.white
+                                                : Colors.green),
+                                        child: DottedBorder(
+                                            borderType: BorderType.Circle,
+                                            radius: Radius.circular(10),
+                                            color: selected4
+                                                ? Colors.black
+                                                : Colors.green,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      11, 7, 11, 7),
+                                              child: Text(
+                                                '1',
+                                                style: TextStyle(
+                                                  color: selected4
+                                                      ? Colors.black
+                                                      : Colors.white,
+                                                ),
+                                              ),
+                                            )),
+                                      )),
+                                ),
+                                Image.asset(
+                                    'assets/images/product image.png'),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Cocacola(330 ml)',
+                                        style: TextStyle(fontSize: 15,color: Colors.black),
+                                      ),
+                                      Text(
+                                        'Cras blandit consequent ',
+                                        style: TextStyle(fontSize: 12,color: Colors.black),
+                                      ),
+                                      Text(
+                                        'sapien utcursus. duis in',
+                                        style: TextStyle(fontSize: 10,color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ]),
+                              borderType: BorderType.RRect,
+                              color: Colors.grey,
+                              dashPattern: [5, 5],
+                              radius: Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                          child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                  child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: OutlinedButton(
+                                      onPressed: () => {
+                                        // Navigator.push(context, MaterialPageRoute(builder: (context)=> Password()))
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            45, 20, 45, 20),
+                                        child: Image.asset(
+                                            'assets/images/387-3871744_message-bubble-png-bubble-message-icon-png-clipart.png'),
+                                      ),
+                                      style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                        ),
+                                        side: BorderSide(
+                                            width: 1, color: Colors.blue),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: OutlinedButton(
+                                      onPressed: () => {
+                                        // Navigator.push(context, MaterialPageRoute(builder: (context)=> Password()))
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            45, 20, 45, 20),
+                                        child: Image.asset(
+                                            'assets/images/ic_31_sd.png'),
+                                      ),
+                                      style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                        ),
+                                        side: BorderSide(
+                                            width: 1, color: Colors.red),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 20, left: 25, right: 25),
+                          child: Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xFF265395),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 5.0),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(30.0)),
+                                  elevation: 8.0,
+                                  minimumSize: Size(double.infinity,
+                                      44), // double.infinity is the width and 30 is the height
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              FinalDelivery()));
+                                },
+                                child: Text(
+                                    "Click After Pickup".toUpperCase(),
+                                    style: btnWhiteText),
+                              )),
+                        ),
+                      ]),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 150.0,
+                  bottom: 585.0,
+                  child: Container(
+                    constraints:
+                        new BoxConstraints(maxHeight: 50.0, maxWidth: 50.0),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30)),
+                    child: DottedBorder(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Color(0xFFf4b71e),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Image.asset('assets/images/Path 14648.png'),
+                        ),
+                      ),
+                      borderType: BorderType.Circle,
+                      color: Colors.grey,
+                      dashPattern: [5, 5],
+                      radius: Radius.circular(30),
+                    ),
                   ),
                 ),
               ],
             ),
-          );
-        });
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -1045,313 +1032,319 @@ class _Modal2State extends State<Modal2> {
   bool onChangeColor = false;
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-        initialChildSize: 0.5, // half screen on load
-        maxChildSize: 1, // full screen on scroll
-        minChildSize: 0.25,
-        builder: (BuildContext context, ScrollController scrollController) {
     return SingleChildScrollView(
-          child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-      Container(
-          constraints: new BoxConstraints(maxHeight: 610.0, maxWidth: 360.0),
-          child: Stack(
-      children: [
-        ListView(
-          controller: scrollController,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20))),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Column(children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        IconButton(
-                            onPressed: () {},
-                            icon:
-                                Image.asset('assets/images/down arrow.png')),
-                        Text('Your Customer'),
-                        IconButton(
-                            onPressed: () {},
-                            icon: Image.asset('assets/images/direction.png'))
-                      ],
-                    ),
-                    Text('Subrina Lorenshtein',
-                        style: TextStyle(fontSize: 20)),
-                    Text('Invoice No. 30WT43gd54'),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 30, top: 10),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Wait for the customer',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 8, 0),
-                      child: Text(
-                          'We have notified the customer. You can leave the order if you cant find them soon.'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            constraints: new BoxConstraints(maxHeight: 610.0, maxWidth: 360.0),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20))),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Container(
-                              child: Align(
-                                alignment: Alignment.bottomRight,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                  child: OutlinedButton(
-                                    onPressed: () => {
-                                      // Navigator.push(context, MaterialPageRoute(builder: (context)=> Password()))
-                                    },
+                            IconButton(
+                                onPressed: () {},
+                                icon: Image.asset(
+                                    'assets/images/down arrow.png')),
+                            Text('Your Customer'),
+                            IconButton(
+                                onPressed: () {},
+                                icon: Image.asset(
+                                    'assets/images/direction.png'))
+                          ],
+                        ),
+                        Text('Subrina Lorenshtein',
+                            style: TextStyle(fontSize: 20)),
+                        Text('Invoice No. 30WT43gd54'),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30, top: 10),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Wait for the customer',
+                                style:
+                                    TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 8, 0),
+                          child: Text(
+                              'We have notified the customer. You can leave the order if you cant find them soon.'),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                          child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                  child: Align(
+                                    alignment: Alignment.bottomRight,
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                          45, 20, 45, 20),
-                                      child: Image.asset(
-                                          'assets/images/387-3871744_message-bubble-png-bubble-message-icon-png-clipart.png'),
-                                    ),
-                                    style: OutlinedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30),
+                                          0, 20, 0, 20),
+                                      child: OutlinedButton(
+                                        onPressed: () => {
+                                          // Navigator.push(context, MaterialPageRoute(builder: (context)=> Password()))
+                                        },
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.fromLTRB(
+                                                  45, 20, 45, 20),
+                                          child: Image.asset(
+                                              'assets/images/387-3871744_message-bubble-png-bubble-message-icon-png-clipart.png'),
+                                        ),
+                                        style: OutlinedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                          ),
+                                          side: BorderSide(
+                                              width: 1, color: Colors.blue),
+                                        ),
                                       ),
-                                      side: BorderSide(
-                                          width: 1, color: Colors.blue),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  color: onChangeColor
-                                      ? Colors.red
-                                      : Colors.green),
-                              child: Align(
-                                alignment: Alignment.bottomRight,
-                                child: OutlinedButton(
-                                  onPressed: () => {
-                                    setState(() {
-                                      onChangeColor = !onChangeColor;
-                                    }),
-                                    // Navigator.push(context, MaterialPageRoute(builder: (context)=> Password()))
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        45, 20, 45, 20),
-                                    child: Image.asset(
-                                        'assets/images/kkic_31_sd.png'),
-                                  ),
-                                  style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(30),
+                                      color: onChangeColor
+                                          ? Colors.red
+                                          : Colors.green),
+                                  child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: OutlinedButton(
+                                      onPressed: () => {
+                                        setState(() {
+                                          onChangeColor = !onChangeColor;
+                                        }),
+                                        // Navigator.push(context, MaterialPageRoute(builder: (context)=> Password()))
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            45, 20, 45, 20),
+                                        child: Image.asset(
+                                            'assets/images/kkic_31_sd.png'),
+                                      ),
+                                      style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                        ),
+                                        side: BorderSide(
+                                            width: 1,
+                                            color: onChangeColor
+                                                ? Colors.red
+                                                : Colors.green),
+                                      ),
                                     ),
-                                    side: BorderSide(
-                                        width: 1,
-                                        color: onChangeColor
-                                            ? Colors.red
-                                            : Colors.green),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ]),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 10, left: 30, right: 30),
-                      child: Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Color(0xFF265395),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 15.0, horizontal: 5.0),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0)),
-                              elevation: 8.0,
-                              minimumSize: Size(double.infinity,
-                                  44), // double.infinity is the width and 30 is the height
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-
-                              showDialog(
-                                context: context,
-                                builder: (_) => Delivery(),
-                              );
-                            },
-                            child: Text("Click After Delivery".toUpperCase(),
-                                style: btnWhiteText),
-                          )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 60),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Deliver To:',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text('02113,71,Charter str Boston,MA,USA')
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                      child: DottedLine(
-                        dashColor: Colors.grey,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 140),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Upon Arrival:',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text('Go to fifth floor Apt #5r')
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                      child: DottedLine(
-                        dashColor: Colors.grey,
-                      ),
-                    ),
-                    Row(
-                      children: [
+                              ]),
+                        ),
                         Padding(
                           padding: const EdgeInsets.only(
-                              left: 40, top: 10, bottom: 5),
-                          child: Text(
-                            'Order Details',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                              bottom: 10, left: 30, right: 30),
+                          child: Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xFF265395),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 15.0, horizontal: 5.0),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(30.0)),
+                                  elevation: 8.0,
+                                  minimumSize: Size(double.infinity,
+                                      44), // double.infinity is the width and 30 is the height
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => Delivery(),
+                                  );
+                                },
+                                child: Text(
+                                    "Click After Delivery".toUpperCase(),
+                                    style: btnWhiteText),
+                              )),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 60),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Deliver To:',
+                                style:
+                                    TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('02113,71,Charter str Boston,MA,USA')
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: [
+                        SizedBox(height: 10),
                         Padding(
-                          padding: const EdgeInsets.only(left: 40),
-                          child: Text(
-                            '4 Items',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                          child: DottedLine(
+                            dashColor: Colors.grey,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 140),
-                          child: Text(
-                            'Subtotal:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                          padding: const EdgeInsets.only(right: 140),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Upon Arrival:',
+                                style:
+                                    TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('Go to fifth floor Apt #5r')
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                          child: DottedLine(
+                            dashColor: Colors.grey,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 40, top: 10, bottom: 5),
+                              child: Text(
+                                'Order Details',
+                                style:
+                                    TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 40),
+                              child: Text(
+                                '4 Items',
+                                style:
+                                    TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 140),
+                              child: Text(
+                                'Subtotal:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              r'$33.75',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red),
+                            )
+                          ],
+                        ),
+                        Column(children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 40, top: 20),
+                            child: Row(
+                              children: [
+                                Text('1 '),
+                                Text(' Black Bread'),
+                              ],
                             ),
                           ),
-                        ),
-                        Text(
-                          r'$33.75',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.red),
-                        )
-                      ],
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 40, top: 10),
+                            child: Row(
+                              children: [
+                                Text('4 '),
+                                Text(' Chocolate Cupcake'),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 40, top: 10, bottom: 10),
+                            child: Row(
+                              children: [
+                                Text('2 '),
+                                Text(' Coca-Cola'),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                            child: DottedLine(
+                              dashColor: Colors.grey,
+                            ),
+                          )
+                        ])
+                      ]),
                     ),
-                    Column(children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 40, top: 20),
-                        child: Row(
-                          children: [
-                            Text('1 '),
-                            Text(' Black Bread'),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 40, top: 10),
-                        child: Row(
-                          children: [
-                            Text('4 '),
-                            Text(' Chocolate Cupcake'),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 40, top: 10, bottom: 10),
-                        child: Row(
-                          children: [
-                            Text('2 '),
-                            Text(' Coca-Cola'),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                        child: DottedLine(
-                          dashColor: Colors.grey,
-                        ),
-                      )
-                    ])
-                  ]),
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-        Positioned(
-          right: 150.0,
-          bottom: 560.0,
-          child: Container(
-            constraints:
-                new BoxConstraints(maxHeight: 50.0, maxWidth: 50.0),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30)),
-            child: DottedBorder(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Color(0xFFf4b71e),
-                      borderRadius: BorderRadius.circular(30)),
-                  child: Image.asset('assets/images/Path 14648.png'),
+                Positioned(
+                  right: 150.0,
+                  bottom: 560.0,
+                  child: Container(
+                    constraints:
+                        new BoxConstraints(maxHeight: 50.0, maxWidth: 50.0),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30)),
+                    child: DottedBorder(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Color(0xFFf4b71e),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Image.asset('assets/images/Path 14648.png'),
+                        ),
+                      ),
+                      borderType: BorderType.Circle,
+                      color: Colors.grey,
+                      dashPattern: [5, 5],
+                      radius: Radius.circular(30),
+                    ),
+                  ),
                 ),
-              ),
-              borderType: BorderType.Circle,
-              color: Colors.grey,
-              dashPattern: [5, 5],
-              radius: Radius.circular(30),
+              ],
             ),
           ),
-        ),
-      ],
-          ),
-        ),
-          ],
-        ),
-    );});
+        ],
+      ),
+    );
   }
 }
 
@@ -1395,10 +1388,10 @@ class _ModalFirstState extends State<ModalFirst> {
                                 Padding(
                                   padding: const EdgeInsets.only(right: 55),
                                   child: Text(
-                                    'Deliver by 3:24 PM',
+                                    'Deliver by 3:24 PM',style:TextStyle(color: Colors.black)
                                   ),
                                 ),
-                                Text(' 4 Items')
+                                Text(' 4 Items',style:TextStyle(color: Colors.black))
                               ],
                             ),
                           ),
@@ -1407,9 +1400,9 @@ class _ModalFirstState extends State<ModalFirst> {
                             children: [
                               Text(
                                 'Monicas Trattoria',
-                                style: TextStyle(fontSize: 20),
+                                style: TextStyle(fontSize: 20,color: Colors.black),
                               ),
-                              Text(' 5.3 mi total'),
+                              Text(' 5.3 mi total',style:TextStyle(color: Colors.black)),
                             ],
                           ),
                           Padding(
@@ -1421,12 +1414,12 @@ class _ModalFirstState extends State<ModalFirst> {
                             child: Text(
                               r'$7.22',
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20),
+                                  fontWeight: FontWeight.bold, fontSize: 20,color:Colors.black)
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text('Guaranteed including tips'),
+                            child: Text('Guaranteed including tips',style:TextStyle(color: Colors.black)),
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),

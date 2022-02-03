@@ -7,7 +7,6 @@ import 'package:demoapp/pages/drawer/profile/profile.dart';
 import 'package:demoapp/pages/drawer/settings/settings.dart';
 import 'package:demoapp/pages/drawer/support/support.dart';
 import 'package:demoapp/pages/map/map1.dart';
-import 'package:demoapp/pages/user/googlesignin.dart';
 import 'package:demoapp/utlis/platte.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,8 +14,10 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:slide_drawer/slide_drawer.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key, required this.userEmail}) : super(key: key);
-final String userEmail;
+  const Home({Key? key, required this.userProfile,required this.email,required this.name}) : super(key: key);
+final String userProfile;
+final String name;
+final String email;
   @override
   _HomeState createState() => _HomeState();
 }
@@ -269,18 +270,18 @@ class _HomeState extends State<Home> {
                         CircleAvatar(
                             radius: 40,
                             backgroundImage: NetworkImage(
-                  imageUrl,
+                  widget.userProfile,
                 ),),
                         Padding(
                             padding: EdgeInsets.all(4.0),
                             child: Text(
-                              name,
+                              widget.name,
                               style: btnWhiteNrmlText,
                             )),
                             Padding(
                             padding: EdgeInsets.all(4.0),
                             child: Text(
-                              widget.userEmail.toString(),
+                              widget.email,
                               style: btnWhiteNrmlText,
                             )),
                         Padding(

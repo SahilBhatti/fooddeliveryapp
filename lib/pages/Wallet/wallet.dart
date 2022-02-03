@@ -30,7 +30,7 @@ class _WalletState extends State<Wallet> {
         leading: IconButton(
                     icon:Image.asset('assets/images/Layer 1.png'),
                     onPressed: () => {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Home(userEmail: '',)))
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Home(name: '',email: '',userProfile: '',)))
                                         },
                   ) ,
       ),

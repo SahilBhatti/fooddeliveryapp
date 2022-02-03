@@ -84,7 +84,7 @@ TextEditingController mobileController = TextEditingController();
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    Home(userEmail: '',)));
+                    Home(userProfile: '',email: '',name: '',)));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Invalid credential'),

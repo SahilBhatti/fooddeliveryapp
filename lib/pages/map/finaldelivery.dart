@@ -1,23 +1,24 @@
+import 'package:demoapp/pages/map/confirm/confirm_delivery.dart';
+import 'package:demoapp/pages/map/helpalert.dart';
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
-import 'package:demoapp/pages/map/finaldelivery.dart';
+import 'package:demoapp/pages/map/map1.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:demoapp/pages/map/helpalert.dart';
-//  const String _baseUrl =
-//       'https://maps.googleapis.com/maps/api/directions/json?';
 
-// Future<void> main() async {
-//   // WidgetsFlutterBinding.ensureInitialized();
-//   runApp(GetLocation());
-// }
 
-class Confirm extends StatelessWidget {
+
+Future<void> main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
+  runApp(FinalDelivery());
+}
+
+class FinalDelivery extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -38,47 +39,12 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
-  LatLng sourceLocation = LatLng(30.697600, 76.692280);
-  LatLng destinationLatlng = LatLng(30.704649, 76.717873);
-
-var array=[];
-  Future<void> _time() async {
-     Dio dio = new Dio();
-    Response response = await dio.get(
-        "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=30.697600,76.692280&destinations=30.704649,76.717873&key=AIzaSyDLdAEq-U9bDQdIkPGl9AXCELyly7Q9EnQ");
-    print(response.data['destination_addresses'][0]);
-    print("aaaaaaaaaaaaaaaa");
-    print(response.data['rows'][0]['elements']);
-    print("bbbbbbbbbbbbbbbbbbbbbb");
-    print(response.data['origin_addresses'][0]);
-    print(response.data['rows'][0]['elements'][0]['distance']['text']);
-    print(response.data['rows'][0]['elements'][0]['duration']['text']);
-    print("cccccccccccc");
-    var durationTime =
-        response.data['rows'][0]['elements'][0]['distance']['text'];
-    print(durationTime);
-    var array = [
-      response.data['origin_addresses'][0],
-      response.data['destination_addresses'][0],
-      response.data['rows'][0]['elements'][0]['distance']['text'],
-      response.data['rows'][0]['elements'][0]['duration']['text']
-    ];
-    print(array);
-    array = jsonDecode(response.data);
-    print("array");
-    if (response.data == 200) {
-      return ;
-    }return ;
-    // return array;
-    //   print("response.data");
-  }
-   getData () {
-  return print(array);
-  // print(array);
-}
-
- MapType _currentMapType = MapType.normal;
-
+  String origin="";
+  String destination='';
+String distance='';
+  String duration='';
+  bool status = false;
+  MapType _currentMapType = MapType.normal;
   void _toggleMapType() {
     setState(() {
       _currentMapType = (_currentMapType == MapType.normal)
@@ -87,7 +53,24 @@ var array=[];
     });
   }
 
+  LatLng sourceLocation = LatLng(30.697600, 76.692280);
+  LatLng destinationLatlng = LatLng(30.704649, 76.717873);
+
+  Future checkDistance() async {
+    Dio dio = new Dio();
+    Response response = await dio.get(
+        "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=30.697600,76.692280&destinations=30.704649,76.717873&key=AIzaSyDLdAEq-U9bDQdIkPGl9AXCELyly7Q9EnQ");
+    print(response.data['destination_addresses'][0]);
+    // final distancedata = response.data;
+     origin = response.data['origin_addresses'][0];
+     destination=response.data['destination_addresses'][0];
+     distance=response.data['rows'][0]['elements'][0]['distance']['text'];
+     duration=response.data['rows'][0]['elements'][0]['duration']['text'];
+   print('.......................................');
+  }
+
   
+
   Set<Marker> _marker = Set<Marker>();
 
   Set<Polyline> _polylines = Set<Polyline>();
@@ -104,8 +87,9 @@ var array=[];
   void initState() {
     super.initState();
     _calculate();
-    _time();
-    getData();
+    checkDistance();
+    Timer(Duration(milliseconds: 10000), () => navigate());
+    // traveltime = time();
     location = Location();
     polylinePoints = PolylinePoints();
 
@@ -118,6 +102,30 @@ var array=[];
 
     setInitialLocation();
   }
+
+  navigate(){
+  setState(() {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Confirm()));
+    showModalBottomSheet<dynamic>(
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(30),
+          topLeft: Radius.circular(30),
+        ),
+      ),
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+            builder: (BuildContext context,
+                    StateSetter setState /*You can rename this!*/) =>
+                Modal2());
+      },
+    );
+  });
+        
+    }
 
   void setInitialLocation() async {
     await location.getLocation().then((value) {
@@ -250,9 +258,12 @@ var array=[];
       ));
     });
   }
-bool status=false;
+
   @override
   Widget build(BuildContext context) {
+    print(distance);
+    print("distance....................................");
+
     CameraPosition initialCameraPosition = CameraPosition(
       zoom: 20,
       tilt: 80,
@@ -272,40 +283,40 @@ bool status=false;
           )
         : SafeArea(
             child: Scaffold(
-                      appBar: AppBar(
-          title: Text(
-            'Confirm Delivery',
-            style: TextStyle(color: Colors.black, fontSize: 15),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Image.asset('assets/images/Layer 1.png'),
-            onPressed: () => {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => FinalDelivery()))
-            },
-          ),
-          // elevation: 0,
-          actions: [
-            Builder(
-              builder: (context) => TextButton(
-                child: Text(
-                  'HELP',
-                  style:
-                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              appBar: AppBar(
+                title: Text(
+                  'Final Delivery',
+                  style: TextStyle(color: Colors.black, fontSize: 15),
                 ),
-                onPressed: () async {
-                  showDialog(
-                    context: context,
-                    builder: (_) => (Help()),
-                  );
-                },
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                centerTitle: true,
+                leading: IconButton(
+                  icon: Image.asset('assets/images/Layer 1.png'),
+                  onPressed: () => {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => GetLocation()))
+                  },
+                ),
+                // elevation: 0,
+                actions: [
+                  Builder(
+                    builder: (context) => TextButton(
+                      child: Text(
+                        'HELP',
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          builder: (_) => (Help()),
+                        );
+                      },
+                    ),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
               body: Stack(
                 children: [
                   GoogleMap(
@@ -321,37 +332,26 @@ bool status=false;
                       showLocationPins();
                     },
                   ),
-                   Padding(
-                    padding: const EdgeInsets.only(bottom: 400, left: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 30),
-                          child: FlutterSwitch(
-                            activeTextColor: Colors.transparent,
-                            inactiveTextColor: Colors.transparent,
-                            width: 50.0,
-                            height: 30.0,
-                            value: status,
-                            borderRadius: 30.0,
-                            padding: 1.0,
-                            activeColor: Color(0xFFfdbc35),
-                            showOnOff: true,
-                            onToggle: (val) {
-                              setState(() {
-                                status = val;
-                                _toggleMapType();
-                              });
-                            },
-                          ),
-                        ),
-                      ],
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 500, right: 200),
+                    child: FlutterSwitch(
+                      activeTextColor: Colors.transparent,
+                      inactiveTextColor: Colors.transparent,
+                      width: 50.0,
+                      height: 30.0,
+                      value: status,
+                      borderRadius: 30.0,
+                      padding: 1.0,
+                      activeColor: Color(0xFFfdbc35),
+                      showOnOff: true,
+                      onToggle: (val) {
+                        setState(() {
+                          status = val;
+                          _toggleMapType();
+                        });
+                      },
                     ),
                   ),
-                  Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Text("Distance=$_placeDistance km"))
                 ],
               ),
             ),

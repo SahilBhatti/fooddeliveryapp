@@ -1,8 +1,8 @@
 import 'package:demoapp/pages/user/SocailLogin.dart';
-import 'package:demoapp/pages/user/googlesignin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart'as http;
 import 'package:demoapp/pages/user/urlmodal.dart';
 
@@ -16,7 +16,7 @@ class Logout extends StatefulWidget {
         with SingleTickerProviderStateMixin {
     late  final AnimationController controller;
      late final Animation<double> scaleAnimation;
-
+final GoogleSignIn googleSignIn = GoogleSignIn();
       @override
       void initState() {
         super.initState();
@@ -32,6 +32,11 @@ class Logout extends StatefulWidget {
 
         controller.forward();
       }
+      Future<void> signOutGoogle() async {
+  await googleSignIn.signOut();
+
+  print("User Signed Out");
+}
 
        Future<void>logout()async{
     dynamic id =await SessionManager().remove("email");

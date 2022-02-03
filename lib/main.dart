@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         "/": (context) => SocailLogin(),
         MyRoutes.splashRoutes: (context) => Splash(),
-        MyRoutes.homepage: (context) => Home(userEmail: '',),
+        MyRoutes.homepage: (context) => Home(userProfile: '',email: '',name: '',),
         MyRoutes.loginRoute: (context) => Login(),
         // MyRoutes.registerRoutes:(context)=>Signup(),
         MyRoutes.forgetPasswordRoute: (context) => ForgotPassword(),
