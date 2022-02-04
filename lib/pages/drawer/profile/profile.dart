@@ -51,11 +51,6 @@ class _ProfileState extends State<Profile> {
             ),
             Text('Name, Last name'),
             Padding(
-              padding: const EdgeInsets.fromLTRB(50, 10, 50, 0),
-              child: Text('Enter your new password and then click on the Save button below.', textAlign: TextAlign.center,
-              style: TextStyle(fontSize:12),),
-            ),
-            Padding(
               padding: const EdgeInsets.fromLTRB(30, 40, 30, 0),
               child: DottedBorder(
                 radius: Radius.circular(10),

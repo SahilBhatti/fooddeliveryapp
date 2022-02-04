@@ -235,8 +235,6 @@ String distance='';
 
   @override
   Widget build(BuildContext context) {
-    print(distance);
-    print("distance....................................");
 
     CameraPosition initialCameraPosition = CameraPosition(
       zoom: 20,

@@ -30,8 +30,9 @@ class BikeScreen extends StatefulWidget {
 
 class _BikeScreenState extends State<BikeScreen> {
   var _transportType = [
-    "Food",
-    "Transport",
+    "Car",
+    "Bike",
+    "bicycle"
   ];
   var _currentSelectedValue;
 
