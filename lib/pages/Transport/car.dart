@@ -36,7 +36,7 @@ class _CarScreenState extends State<CarScreen> {
   var _currentSelectedValue;
 
   var _transportModel = [
-    "Food",
+    "City Comfort",
     "Transport",
   ];
   var _currentSelectedValue2;

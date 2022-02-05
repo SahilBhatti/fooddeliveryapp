@@ -36,7 +36,7 @@ class _MotorCycleScreenState extends State<MotorCycleScreen> {
   var _currentSelectedValue;
 
   var _transportModel = [
-    "Food",
+    "City Comfort",
     "Transport",
   ];
   var _currentSelectedValue2;

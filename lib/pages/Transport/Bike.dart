@@ -37,7 +37,7 @@ class _BikeScreenState extends State<BikeScreen> {
   var _currentSelectedValue;
 
   var _transportModel = [
-    "Food",
+    "City Comfort",
     "Transport",
   ];
   var _currentSelectedValue2;
@@ -301,19 +301,18 @@ class _BikeScreenState extends State<BikeScreen> {
               ],
             ),
             Padding(padding: EdgeInsets.only(top: 10,bottom: 20)),
-            TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary:Color(0xFFf66b00)
+            ),
                 onPressed: () {},
-                child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Color(0xFFf66b00)),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(60, 20, 60, 20),
-                      child: Text(
-                        'SEND FOR REGISTRATION',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ))),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(60, 20, 60, 20),
+                  child: Text(
+                    'Send for registration'.toUpperCase(),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )),
           ],
         ),
       ),

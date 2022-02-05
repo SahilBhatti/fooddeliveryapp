@@ -539,9 +539,10 @@ final homeScaffoldKey = GlobalKey<ScaffoldState>();
                               ),
                             ),
                             IconButton(onPressed: () async {
-                // Prediction? p = await PlacesAutocomplete.show(
-                //     context: context, apiKey: kGoogleApiKey);
-                // displayPrediction(p!);
+                Prediction? p = await PlacesAutocomplete.show(
+                    context: context, apiKey: kGoogleApiKey);
+                displayPrediction(p!, context);
+                print(p.description);
               },
                               icon: Icon(Icons.arrow_drop_down,)),
                           ],
