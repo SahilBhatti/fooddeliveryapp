@@ -240,18 +240,21 @@ Future<void> signOutGoogle() async {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.35,
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage('assets/images/hd_logo.png')),
+                Padding(
+                  padding: const EdgeInsets.only(top:50),
+                  child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage('assets/images/hd_logo.png')),
+                          ),
                         ),
-                      ),
-                    )),
+                      )),
+                ),
               ],
             ),
             Container(

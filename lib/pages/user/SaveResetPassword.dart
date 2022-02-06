@@ -148,20 +148,23 @@ class _SaveResetPasswordState extends State<SaveResetPassword> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
+                    Padding(
+                      padding: const EdgeInsets.only(top:20),
+                      child: Container(
 
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * 0.35,
-                        child:
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child:   Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage( 'assets/images/hd_logo.png') ),),
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child:
+                          Padding(
+                            padding: EdgeInsets.all(10),
+                            child:   Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: AssetImage( 'assets/images/hd_logo.png') ),),
 
-                          ),
-                        )
+                            ),
+                          )
+                      ),
                     ),
                   ],
                 ),
